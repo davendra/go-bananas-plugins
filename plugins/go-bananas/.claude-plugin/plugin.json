@@ -1,0 +1,10 @@
+{
+  "name": "go-bananas",
+  "version": "1.0.0",
+  "description": "Generate and edit images with Go Bananas: the remote MCP server plus a skill for characters, products, posters and conversational editing.",
+  "author": { "name": "Davendra Patel", "url": "https://gobananasai.com" },
+  "homepage": "https://gobananasai.com/connect",
+  "repository": "https://github.com/davendra/go-bananas-plugins",
+  "license": "MIT",
+  "keywords": ["images", "image-generation", "mcp", "gemini", "gpt-image"]
+}

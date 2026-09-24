@@ -1,0 +1,15 @@
+{
+  "name": "go-bananas",
+  "owner": { "name": "Davendra Patel", "url": "https://gobananasai.com" },
+  "metadata": {
+    "description": "Go Bananas: AI image generation, characters, products and posters inside your agent."
+  },
+  "plugins": [
+    {
+      "name": "go-bananas",
+      "source": "./plugins/go-bananas",
+      "description": "Generate and edit images with Go Bananas. Connects the Go Bananas MCP server and adds a skill that knows how to use it.",
+      "category": "creative"
+    }
+  ]
+}
