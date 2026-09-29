@@ -9,19 +9,42 @@ skill that tells your agent how to use it well.
 
 ## Claude Code
 
-```
-/plugin marketplace add davendra/go-bananas-plugins
-/plugin install go-bananas@go-bananas
-```
+Run these one at a time: send the first, wait for it to finish, then send the second.
+
+1. Add the marketplace:
+
+   ```
+   /plugin marketplace add davendra/go-bananas-plugins
+   ```
+
+2. Install the plugin:
+
+   ```
+   /plugin install go-bananas@go-bananas
+   ```
 
 Then run `/mcp`, choose **go-bananas** and sign in.
 
+## Claude app (claude.ai, Desktop, mobile)
+
+The plugin adds instructions only. To generate images, add the connector: **Settings → Connectors →
+Add custom connector**, URL `https://mcp.gobananasai.com`.
+
 ## Codex
 
-```
-codex plugin marketplace add davendra/go-bananas-plugins
-codex plugin add go-bananas@go-bananas
-```
+Run these one at a time:
+
+1. Add the marketplace:
+
+   ```
+   codex plugin marketplace add davendra/go-bananas-plugins
+   ```
+
+2. Install the plugin:
+
+   ```
+   codex plugin add go-bananas@go-bananas
+   ```
 
 Sign in to Go Bananas when Codex asks.
 
