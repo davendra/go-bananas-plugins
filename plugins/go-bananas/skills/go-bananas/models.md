@@ -2,13 +2,15 @@
 
 Detailed comparison of Go Bananas! Standard (Gemini Flash) and Pro (Gemini Pro) models.
 
+> The Standard column below is Nano Banana 2 Lite (`gemini-flash-lite-image`, fixed 1K). Nano Banana 2.1 (`gemini-nano-banana-2.1`) is the other standard-tier model: up to 14 references, extra aspect ratios (1:4 to 8:1), Google Search grounding, thinking mode, and 1K, 2K or 4K output ($0.0336 per 1K image, $0.0504 per 2K, $0.113 per 4K). It replaced Nano Banana 2; `gemini-flash-image` is still accepted as an alias of `gemini-nano-banana-2.1`. `list_models` gives the current capabilities of every model.
+
 ---
 
 ## Quick Reference
 
 | Feature | Standard (Flash) | Pro |
 |---------|------------------|-----|
-| Model ID | `gemini-flash-image` | `gemini-pro-image` |
+| Model ID | `gemini-flash-lite-image` | `gemini-pro-image` |
 | Resolution | 1K (1024px) | 1K, 2K, 4K (up to 4096px) |
 | Reference Images | Up to 3 | Up to 14 |
 | Character Consistency | Up to 3 people | Up to 5 people |
@@ -171,7 +173,7 @@ Pro uses internal reasoning for complex compositions. It generates interim "thou
 {
   "prompt": "Analyze this image of a room and generate a 'before' image showing what the room might have looked like during construction.",
   "model_id": "gemini-pro-image",
-  "reference_images": ["finished_room.jpg"]
+  "reference_images": ["<r2_key of finished_room.jpg>"]
 }
 ```
 
@@ -273,7 +275,7 @@ Pro model works as a powerful upscaling tool. Input images as small as 150x150 p
 ```json
 {
   "prompt": "Upscale to 4K",
-  "reference_images": ["small_image.png"],
+  "reference_images": ["<r2_key of small_image.png>"],
   "model_id": "gemini-pro-image",
   "resolution_tier": "4k"
 }
@@ -292,7 +294,7 @@ Pro model can restore damaged, faded, or old photographs:
 ```json
 {
   "prompt": "Restore this old photograph to pristine condition",
-  "reference_images": ["damaged_photo.jpg"],
+  "reference_images": ["<r2_key of damaged_photo.jpg>"],
   "model_id": "gemini-pro-image"
 }
 ```
@@ -314,7 +316,7 @@ Pro model's thinking mode enables visual reasoning and puzzle-solving capabiliti
 ```json
 {
   "prompt": "Return an image of the solved crossword, use green pen",
-  "reference_images": ["crossword.png"],
+  "reference_images": ["<r2_key of crossword.png>"],
   "model_id": "gemini-pro-image"
 }
 ```
@@ -350,7 +352,7 @@ Reference images serve multiple purposes beyond character consistency:
 ```json
 {
   "prompt": "Logo from Image 1 on device from Image 2, styled like Image 3, colors from Image 4",
-  "reference_images": ["logo.png", "device.png", "style.jpg", "colors.jpg"],
+  "reference_images": ["<r2_key of logo.png>", "<r2_key of device.png>", "<r2_key of style.jpg>", "<r2_key of colors.jpg>"],
   "model_id": "gemini-pro-image"
 }
 ```

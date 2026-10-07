@@ -68,28 +68,28 @@ This section applies only after the user explicitly chooses or approves provider
 
 ```
 list_models()
-check_quota({ estimated_images: 1, model_id: "gemini-flash-image" })
+check_quota({ estimated_images: 1, model_id: "gemini-nano-banana-2.1" })
 ```
 
-`list_models` shows tenant-enabled models and capability limits. `check_quota` returns storage quota, rate limit, service health, and an approximate provider-cost estimate. Quote the estimate to the user before expensive runs.
+`list_models` shows tenant-enabled models and capability limits. `check_quota` returns storage quota, rate limit, service health, a storage self-test, recent provider billing/quota rejections (`providerStatus`), and an approximate provider-cost estimate. Quote the estimate to the user before expensive runs.
 
 ## Models
 
-| Feature          | Lite (Flash Lite) | Standard (Flash) | Pro               | OpenAI GPT Image 2      |
+| Feature          | Lite (Flash Lite) | Standard (NB2.1) | Pro               | OpenAI GPT Image 2      |
 | ---------------- | ----------------- | ---------------- | ----------------- | ----------------------- |
-| Resolution       | 1K                | 0.5K, 1K, 2K, 4K | 1K, 2K, 4K        | Size/quality controlled |
+| Resolution       | 1K                | 1K, 2K, 4K       | 1K, 2K, 4K        | Size/quality controlled |
 | Reference images | Up to 3           | Up to 14         | Up to 14          | Up to 16                |
 | Text rendering   | Basic             | Good             | Advanced          | Strong                  |
 | Web grounding    | No                | Yes              | Yes               | No                      |
 | Speed            | Fastest           | Fast             | Quality-optimized | Quality/size dependent  |
 
 **Default provider model: Nano Banana 2 Lite (Flash Lite)**
-Within the explicitly selected provider-backed lane, use `model_id: "gemini-flash-lite-image"` unless the user requests another model or the task clearly needs a capability Lite does not provide. Use Nano Banana 2 (`gemini-flash-image`) for broader aspect ratios, 2K/4K output, search grounding, or stronger multi-reference workflows. Use Pro (`gemini-pro-image`) when specifically needed for premium production quality, advanced text rendering, grounding, or 4K output.
+Within the explicitly selected provider-backed lane, use `model_id: "gemini-flash-lite-image"` unless the user requests another model or the task clearly needs a capability Lite does not provide. Use Nano Banana 2.1 (`gemini-nano-banana-2.1`) for broader aspect ratios, 2K/4K output, search grounding, or stronger multi-reference workflows. It replaced Nano Banana 2: `gemini-flash-image` is still accepted as an alias of `gemini-nano-banana-2.1`, but use the new ID. Use Pro (`gemini-pro-image`) when specifically needed for premium production quality, advanced text rendering, grounding, or 4K output.
 
 **When to use:**
 
 - **Lite (NB2 Lite)**: Default for provider-backed generation — fastest, lowest-cost 1K generation/editing
-- **Standard (NB2)**: Use for broader ratios, 2K/4K output, grounding, and stronger multi-reference workflows
+- **Standard (NB2.1)**: Use for broader ratios, 2K/4K output, grounding, and stronger multi-reference workflows; 1K, 2K or 4K output
 - **Pro**: Use for production print materials, infographics, text-heavy content, grounding, thinking mode, or 4K output
 - **OpenAI GPT Image 2**: Use when OpenAI output controls, quality tiers, or format options are specifically useful
 
@@ -304,6 +304,8 @@ Keep your character and product libraries organized for efficient reuse.
 **Characters**: Use `list_characters` to review all saved characters. Update descriptions with `update_character` when designs evolve.
 
 **Products**: Use `list_product_references` to review products. Update metadata (name, description, tags) with `update_product_reference`.
+
+**Variations**: identical generation calls sent while an identical one is still running are merged and return the same image. To get several variations of one prompt, use `batch_generate` (or vary the prompt), not parallel identical calls.
 
 **Reference Groups**: Bundle related reference images into groups for complex scenes requiring multiple visual references.
 
