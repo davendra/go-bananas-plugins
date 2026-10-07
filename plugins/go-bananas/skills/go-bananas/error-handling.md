@@ -8,9 +8,11 @@ Before starting batch operations (3+ image generations), call `check_quota` to v
 - Storage quota has sufficient remaining MB
 - Rate limit has available requests
 - Service health is not degraded (circuit breaker is not open)
+- Image storage passes the server's self-test (`details.storageHealth`)
+- No provider has rejected a recent request for billing or quota reasons (`details.providerStatus`)
 
 ```
-check_quota → { canGenerate: true/false, reasons: [...], details: {...} }
+check_quota → { canGenerate: true/false, reasons: [...], warnings: [...], details: {...} }
 ```
 
 If `canGenerate` is `false`, stop and inform the user with the specific reasons.

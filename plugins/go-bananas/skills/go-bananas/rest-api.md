@@ -83,7 +83,7 @@ curl -X POST https://gobananasai.com/api/images \
 | system_instruction | string | No | Style guidance |
 | style_preset_id | integer | No | Apply preset by ID |
 | style_preset_name | string | No | Apply preset by name |
-| model_id | string | No | gemini-flash-image or gemini-pro-image |
+| model_id | string | No | gemini-flash-lite-image (default), gemini-nano-banana-2.1, gemini-pro-image, openai-gpt-image-2, openai-gpt-image-2.5-flare or openai-gpt-image-2.5-sunburst |
 
 **Response:**
 ```json

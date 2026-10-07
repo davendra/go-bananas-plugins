@@ -1,6 +1,6 @@
 # Go Bananas! MCP Tools Reference
 
-Complete documentation for all 53 MCP tools organized by category.
+Complete documentation for all 56 MCP tools organized by category.
 
 ---
 
@@ -43,10 +43,10 @@ Generate new images from text prompts.
 | aspect_ratio | string | No | square, portrait, landscape, 16:9, 9:16, 4:3, 3:4 |
 | negative_prompt | string | No | What to avoid in the image |
 | system_instruction | string | No | Style guidance for the model |
-| reference_images | array | No | URLs or R2 keys for reference (model-dependent limits) |
+| reference_images | array | No | R2 keys of images stored in this workspace (model-dependent limits). Other keys and URLs are rejected with 400; for a URL use `reference_assets` with `image_url` |
 | style_preset_id | integer | No | Apply saved style preset by ID |
 | style_preset_name | string | No | Apply saved style preset by name |
-| model_id | string | No | gemini-flash-image, gemini-pro-image, or openai-gpt-image-2 |
+| model_id | string | No | gemini-flash-lite-image (default), gemini-nano-banana-2.1, gemini-pro-image, openai-gpt-image-2, openai-gpt-image-2.5-flare or openai-gpt-image-2.5-sunburst |
 
 **Example:**
 
@@ -224,6 +224,32 @@ Generate multiple prompts in one queued batch operation.
 | model_id | string | No | Shared model override |
 | style_preset_id | integer | No | Apply a saved style preset |
 | reference_images | array | No | Shared reference images |
+
+---
+
+## Async Generation (3 tools)
+
+Durable jobs for clients that cannot hold a long request open. Same inputs as `generate_image`, one image request per job, at most 3 unfinished jobs per workspace.
+
+### start_generation
+
+Start a job and get an `execution_id`. Returns images inline if the job finishes within `sync_timeout_ms`; otherwise poll `get_generation_status`.
+
+**Parameters:** every `generate_image` parameter, plus:
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| idempotency_key | string | No | Same key + same inputs returns the same job |
+| sync_timeout_ms | integer | No | Wait for inline images, max 25000 |
+
+### get_generation_status
+
+Only the API key, or OAuth user and client, that started the job can poll it (OAuth: `images:read`).
+
+**Parameters:** `execution_id` (string, required). Returns `status`, `progress_percent`, `current_step`, `started_at`, `completed_at`, `duration_ms`, `log_entries`, `images` when completed, `error_message` when failed.
+
+### cancel_generation
+
+**Parameters:** `execution_id` (string, required). Returns `status` and `cancel_requested`. A job not yet dispatched never runs. Only the caller that started the job can cancel it (OAuth: `images:generate`).
 
 ---
 
@@ -551,7 +577,7 @@ Summarize usage for analytics and quota tracking.
 
 ### check_quota
 
-Pre-flight check for whether the tenant can generate images. Checks storage quota, rate limit, service health (circuit breaker), model allow-listing, and approximate provider cost before batch or expensive operations.
+Pre-flight check for whether the tenant can generate images. Checks storage quota, rate limit, service health (circuit breaker), a storage self-test, recent provider billing/quota rejections, model allow-listing, and approximate provider cost before batch or expensive operations. It never calls an image model and charges no quota.
 
 **Parameters:**
 | Parameter | Type | Required | Description |
@@ -566,9 +592,12 @@ Pre-flight check for whether the tenant can generate images. Checks storage quot
 
 - `canGenerate` (boolean) — whether all checks pass
 - `reasons` (string[]) — human-readable explanations for any failures
+- `warnings` (string[]) — problems that do not block the selected model (for example another allowed provider is out of billing credit)
 - `details.storage` — `ok`, `usedMb`, `quotaMb`, `remainingMb`
 - `details.rateLimit` — `ok`, `remaining`, `limitPerMinute`, `resetAt`
 - `details.serviceHealth` — `ok`, `circuitState` (closed/open/half_open), `timeUntilRetrySeconds`
+- `details.storageHealth` — `ok`, `checkedAt`, `cached`, `error`: the server writes, reads back and deletes a tiny object under the tenant's `_healthcheck/` prefix and reads the image table. Cached 30 s per tenant. `ok: false` makes `canGenerate` false.
+- `details.providerStatus` — per provider of the allowed models: `ok`, `models`, `limitedModels`, `lastError` (`kind` billing/quota, `message`, `recordedAt`). This is the last billing/quota rejection the provider returned in the past 15 minutes, cleared by the next success; it is not a live billing query. OpenAI billing applies to every OpenAI model; Gemini daily quota applies only to the model that hit it. If the selected model is in `limitedModels`, `canGenerate` is false; other limited models are a warning.
 - `estimatedCost` — approximate provider-cost estimate, confidence, assumptions, and warnings
 
 **Example:**

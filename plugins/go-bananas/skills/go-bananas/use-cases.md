@@ -66,7 +66,7 @@ Text: Overlay massive, pop-style text in the middle: '[HEADLINE]'. Use a thick w
 Background: A blurred, bright [SETTING] background. High saturation and contrast.",
   "aspect_ratio": "16:9",
   "model_id": "gemini-pro-image",
-  "reference_images": ["[person_reference.jpg]"]
+  "reference_images": ["<r2_key of person_reference.jpg>"]
 }
 ```
 
@@ -478,7 +478,7 @@ Maintain the exact positioning of elements from the reference.
 Use [BRAND COLORS] color scheme, premium luxury feel.",
   "aspect_ratio": "16:9",
   "model_id": "gemini-pro-image",
-  "reference_images": ["[sketch.jpg]"]
+  "reference_images": ["<r2_key of sketch.jpg>"]
 }
 ```
 
@@ -491,7 +491,7 @@ Primary color: [COLOR], modern typography.
 Add realistic content and polish while maintaining the exact layout.",
   "aspect_ratio": "9:16",
   "model_id": "gemini-pro-image",
-  "reference_images": ["[wireframe.png]"]
+  "reference_images": ["<r2_key of wireframe.png>"]
 }
 ```
 
@@ -502,7 +502,7 @@ Add realistic content and polish while maintaining the exact layout.",
 into this 64x64 grid image. Use high contrast colors.
 Follow the grid structure exactly for easy extraction.",
   "aspect_ratio": "square",
-  "reference_images": ["[grid.png]"]
+  "reference_images": ["<r2_key of grid.png>"]
 }
 ```
 
@@ -514,7 +514,7 @@ sequence, frame by frame animation, square aspect ratio.
 Follow the structure of the attached reference image exactly.
 Each cell shows one animation frame, consistent character design throughout.",
   "aspect_ratio": "square",
-  "reference_images": ["[grid_template.png]"]
+  "reference_images": ["<r2_key of grid_template.png>"]
 }
 ```
 
@@ -534,7 +534,7 @@ Style: Apply a [DESIGN STYLE] style with [MATERIALS] across ALL images.
 Quality: Photorealistic rendering, soft natural lighting.",
   "aspect_ratio": "3:4",
   "model_id": "gemini-pro-image",
-  "reference_images": ["[floor_plan.png]"]
+  "reference_images": ["<r2_key of floor_plan.png>"]
 }
 ```
 
@@ -547,7 +547,7 @@ Keep the composition identical but make all elements three-dimensional.
 Maintain the original humor/emotion while adding dimensional depth.",
   "aspect_ratio": "square",
   "model_id": "gemini-pro-image",
-  "reference_images": ["[2d_source.png]"]
+  "reference_images": ["<r2_key of 2d_source.png>"]
 }
 ```
 
@@ -560,7 +560,7 @@ Add realistic materials: [MATERIALS]
 Professional product photography lighting, studio environment.",
   "aspect_ratio": "16:9",
   "model_id": "gemini-pro-image",
-  "reference_images": ["[technical_drawing.png]"]
+  "reference_images": ["<r2_key of technical_drawing.png>"]
 }
 ```
 
@@ -620,7 +620,7 @@ but add [SEASONAL ELEMENTS] and change the lighting to [LIGHTING DESCRIPTION]."
 ```json
 {
   "prompt": "Upscale to 4K",
-  "reference_images": ["[small_image.png]"],
+  "reference_images": ["<r2_key of small_image.png>"],
   "model_id": "gemini-pro-image",
   "notes": "Set resolution parameter to 2K or 4K. Model intelligently enhances details."
 }
@@ -640,7 +640,7 @@ but add [SEASONAL ELEMENTS] and change the lighting to [LIGHTING DESCRIPTION]."
 Fix any tears, scratches, fading, or damage.
 Preserve the original character and era of the photograph.
 Color correct if needed, but maintain authenticity.",
-  "reference_images": ["[damaged_photo.jpg]"],
+  "reference_images": ["<r2_key of damaged_photo.jpg>"],
   "model_id": "gemini-pro-image"
 }
 ```
@@ -651,7 +651,7 @@ Color correct if needed, but maintain authenticity.",
   "prompt": "Restore and colorize this vintage black and white photograph.
 Fix any damage, then add realistic, historically accurate colors.
 Maintain the era-appropriate atmosphere and details.",
-  "reference_images": ["[vintage_bw.jpg]"],
+  "reference_images": ["<r2_key of vintage_bw.jpg>"],
   "model_id": "gemini-pro-image"
 }
 ```
@@ -666,7 +666,7 @@ Maintain the era-appropriate atmosphere and details.",
 ```json
 {
   "prompt": "A 360 turnaround view in 4 different angles, full body pose",
-  "reference_images": ["[single_character.png]"],
+  "reference_images": ["<r2_key of single_character.png>"],
   "aspect_ratio": "3:2",
   "notes": "Great for building character references from a single image."
 }
@@ -676,7 +676,7 @@ Maintain the era-appropriate atmosphere and details.",
 ```json
 {
   "prompt": "A closeup photo of her looking right in profile view",
-  "reference_images": ["[front_facing.png]"],
+  "reference_images": ["<r2_key of front_facing.png>"],
   "aspect_ratio": "square"
 }
 ```
@@ -688,7 +688,7 @@ Maintain the era-appropriate atmosphere and details.",
 Professional character design layout.
 Consistent lighting across all views.
 Clean background, easy to cut out.",
-  "reference_images": ["[character.png]"],
+  "reference_images": ["<r2_key of character.png>"],
   "aspect_ratio": "16:9"
 }
 ```
@@ -703,7 +703,7 @@ Clean background, easy to cut out.",
 ```json
 {
   "prompt": "Return an image of the solved crossword, use green pen",
-  "reference_images": ["[crossword.png]"],
+  "reference_images": ["<r2_key of crossword.png>"],
   "notes": "Model attempts to solve and fill in the puzzle."
 }
 ```
@@ -714,7 +714,7 @@ Clean background, easy to cut out.",
   "prompt": "Analyze this image and overlay informative labels
 explaining the key elements. Add arrows pointing to important features.
 Educational infographic style.",
-  "reference_images": ["[complex_image.jpg]"],
+  "reference_images": ["<r2_key of complex_image.jpg>"],
   "model_id": "gemini-pro-image"
 }
 ```
@@ -725,7 +725,7 @@ Educational infographic style.",
   "prompt": "Based on this image, show what will happen next.
 Keep the scene consistent but advance the action/story.
 Same characters, same setting, next moment in time.",
-  "reference_images": ["[scene.jpg]"]
+  "reference_images": ["<r2_key of scene.jpg>"]
 }
 ```
 
@@ -741,7 +741,7 @@ Same characters, same setting, next moment in time.",
   "prompt": "Place this product (Image 1) into a modern home office scene.
 Position it prominently on the desk.
 Natural lighting, lifestyle photography style.",
-  "reference_images": ["[product.png]"],
+  "reference_images": ["<r2_key of product.png>"],
   "notes": "Model places novel objects the model doesn't otherwise know about."
 }
 ```
@@ -752,7 +752,7 @@ Natural lighting, lifestyle photography style.",
   "prompt": "Create a new portrait in the exact artistic style of Image 1.
 Match the brushwork, color palette, and technique precisely.
 Subject: [NEW SUBJECT DESCRIPTION]",
-  "reference_images": ["[style_reference.jpg]"]
+  "reference_images": ["<r2_key of style_reference.jpg>"]
 }
 ```
 
@@ -762,7 +762,7 @@ Subject: [NEW SUBJECT DESCRIPTION]",
   "prompt": "Put this logo (Image 1) on a high-end ad for [PRODUCT].
 The logo should be perfectly integrated into the design.
 Embossed on the product surface, premium look.",
-  "reference_images": ["[logo.png]"],
+  "reference_images": ["<r2_key of logo.png>"],
   "notes": "Great for brand consistency across marketing materials."
 }
 ```
@@ -773,7 +773,7 @@ Embossed on the product surface, premium look.",
   "prompt": "Create a [SCENE DESCRIPTION] using the color scheme from Image 1.
 Match the exact color palette, tones, and mood.
 Apply these colors naturally throughout the new scene.",
-  "reference_images": ["[color_reference.jpg]"]
+  "reference_images": ["<r2_key of color_reference.jpg>"]
 }
 ```
 
@@ -784,7 +784,7 @@ Apply these colors naturally throughout the new scene.",
 Place this combination in a scene styled like Image 3.
 Use the color palette from Image 4.
 Overall: a professional ad for the product.",
-  "reference_images": ["[logo.png]", "[device.png]", "[ad_style.jpg]", "[colors.jpg]"],
+  "reference_images": ["<r2_key of logo.png>", "<r2_key of device.png>", "<r2_key of ad_style.jpg>", "<r2_key of colors.jpg>"],
   "model_id": "gemini-pro-image",
   "notes": "Pro model handles up to 14 references (6 with high fidelity)."
 }
