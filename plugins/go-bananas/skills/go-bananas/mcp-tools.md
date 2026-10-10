@@ -1,6 +1,6 @@
 # Go Bananas! MCP Tools Reference
 
-Complete documentation for all 56 MCP tools organized by category.
+Complete documentation for all 58 MCP tools organized by category.
 
 ---
 
@@ -47,6 +47,10 @@ Generate new images from text prompts.
 | style_preset_id | integer | No | Apply saved style preset by ID |
 | style_preset_name | string | No | Apply saved style preset by name |
 | model_id | string | No | gemini-flash-lite-image (default), gemini-nano-banana-2.1, gemini-pro-image, openai-gpt-image-2, openai-gpt-image-2.5-flare or openai-gpt-image-2.5-sunburst |
+| project | string | No | Project to file the new images under. Only when the user names one, then keep passing it; "none" for no project. See [Projects and Tags](#projects-and-tags-2-tools) |
+| tags | string[] | No | Tags to add to the new images (up to 10), only when the user asks |
+
+Every tool that makes images takes `project` and `tags`.
 
 **Example:**
 
@@ -180,7 +184,7 @@ Upload an image from URL or local file path for editing.
 
 ### get_image_info
 
-Get metadata about a specific image including edit history.
+Get metadata about a specific image including edit history, its project and its tags.
 
 **Parameters:**
 | Parameter | Type | Required | Description |
@@ -199,7 +203,7 @@ List all images in the current session.
 
 ### search_images
 
-Search across all images with filters.
+Search across all images with filters. Each result shows its project and tags, e.g. `#12 (Brand Refresh · hero, draft)`.
 
 **Parameters:**
 | Parameter | Type | Required | Description |
@@ -209,6 +213,8 @@ Search across all images with filters.
 | filters.aspect_ratio | string | No | Filter by aspect ratio |
 | filters.created_after | string | No | ISO timestamp |
 | filters.created_before | string | No | ISO timestamp |
+| filters.project | string | No | A project name or key; "none" for images without a project |
+| filters.tags | string[] | No | Images that carry every one of these tags (up to 10) |
 | limit | integer | No | Max results (default 15, max 50) |
 | sort_order | string | No | 'newest' (default) or 'oldest' |
 
@@ -250,6 +256,42 @@ Only the API key, or OAuth user and client, that started the job can poll it (OA
 ### cancel_generation
 
 **Parameters:** `execution_id` (string, required). Returns `status` and `cancel_requested`. A job not yet dispatched never runs. Only the caller that started the job can cancel it (OAuth: `images:generate`).
+
+---
+
+## Projects and Tags (2 tools)
+
+An image is in at most one project and carries up to 20 tags. Names match loosely ("Brand Refresh" = `brand_refresh`), and `none` means no project. A new image goes to the `project` you pass, else (for an edit) to its original's project, else, with the local connector (the `gobananas-mcp` STDIO proxy, 1.4.0 or later), to the folder you work in. Tags are only ever the ones you pass.
+
+### list_projects
+
+The 50 most recently used projects with image counts, `unassignedCount` (images in no project) and the 20 most used tags. Call it before naming a project, to reuse an existing one.
+
+**Parameters:** None
+
+### organize_images
+
+Move up to 100 images to a project, take them out of their project, and add or remove tags. Give at least one of `project`, `add_tags` or `remove_tags`.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| image_ids | integer[] | Yes | IDs of the images (1-100) |
+| project | string | No | Project name to move them to (created if new); "none" takes them out of their project |
+| add_tags | string[] | No | Tags to add (up to 10) |
+| remove_tags | string[] | No | Tags to remove (up to 10) |
+
+Returns `{ updated, notFound, project, addedTags }`. Ids outside the workspace come back in `notFound`. OAuth: `images:edit`, and an owner or manager role.
+
+**Example:**
+
+```json
+{
+  "image_ids": [342, 343],
+  "project": "Brand Refresh",
+  "add_tags": ["hero"]
+}
+```
 
 ---
 
