@@ -141,7 +141,17 @@ Save product images, generate unlimited marketing scenes.
 
 Save and reuse prompt templates for consistent branding.
 
-### 6. Pro Model Features (Advanced)
+### 6. Projects and Tags
+
+Every image lands in the gallery. To keep a campaign together:
+
+- Leave `project` out normally: new images go to the project of the image being edited or, with the local connector (the `gobananas-mcp` STDIO proxy, 1.4.0 or later), of the folder you are working in.
+- When the user names a project, call `list_projects` to reuse an existing name, pass `project` to every image tool, and keep passing the same name for the rest of the conversation. `"none"` keeps images out of every project.
+- Pass `tags` only when the user asks for labels (up to 10).
+- To move or relabel images you already made, use `organize_images` (up to 100 ids; `project: "none"` takes them out of their project).
+- To find them again, use `search_images` with `filters: { project: "Brand Refresh", tags: ["hero"] }`.
+
+### 7. Pro Model Features (Advanced)
 
 - **Text & Infographics**: SOTA text rendering, data visualization
 - **Viral Thumbnails**: Identity + text + graphics in one pass
@@ -154,7 +164,7 @@ Save and reuse prompt templates for consistent branding.
 
 For detailed information, see:
 
-- **mcp-tools.md** - All 53 MCP tools with parameters and examples
+- **mcp-tools.md** - All 58 MCP tools with parameters and examples
 - **rest-api.md** - REST endpoints with curl examples
 - **prompt-patterns.md** - Best practices for writing effective prompts
 - **models.md** - Detailed Flash vs Pro feature comparison

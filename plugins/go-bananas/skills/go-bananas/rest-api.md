@@ -84,6 +84,8 @@ curl -X POST https://gobananasai.com/api/images \
 | style_preset_id | integer | No | Apply preset by ID |
 | style_preset_name | string | No | Apply preset by name |
 | model_id | string | No | gemini-flash-lite-image (default), gemini-nano-banana-2.1, gemini-pro-image, openai-gpt-image-2, openai-gpt-image-2.5-flare or openai-gpt-image-2.5-sunburst |
+| project | string | No | Project to file the new images in (created if new; `none` for no project; blank counts as not given) |
+| tags | string[] | No | Up to 10 tags for the new images |
 
 **Response:**
 ```json
@@ -115,7 +117,13 @@ curl -X POST https://gobananasai.com/api/images/upload \
 **Request:**
 - Content-Type: `multipart/form-data`
 - Field: `file` - Image file (PNG, JPEG, WebP)
+- Field: `project` (optional) - Project to file the image in (`none` for no project; blank counts as not given)
+- Field: `tags` (optional) - Tags, as repeated fields or one comma-separated value (up to 10)
+- Header: `X-Go-Bananas-Project` (optional) - `encodeURIComponent(name)` of the connector's folder, used when there is no `project` field
 - Max size: 20MB
+
+The response also carries `project` (`{ "id", "name", "key" }` or `null`), and `warnings` if the
+image was saved but its project and tags could not be applied.
 
 **Response:**
 ```json
@@ -164,6 +172,11 @@ curl "https://gobananasai.com/api/images?search=sunset&limit=10" \
 | limit | integer | 50 | Max results (max 200) |
 | offset | integer | 0 | Pagination offset |
 | search | string | - | Search in prompts |
+| project | string | - | Project key (or name), or `none` for images without a project |
+| tags | string | - | Tag keys, comma-separated or as repeated `tags` parameters; an image must have every one (up to 10) |
+
+Each image also carries `project` (`{ "id", "name", "key" }` or `null`) and `tags`
+(`[{ "name", "key" }]`), and so does `GET /api/images/:id`.
 
 **Response:**
 ```json
@@ -222,6 +235,106 @@ curl -X POST https://gobananasai.com/api/images/delete-bulk \
   "failed": [{"id": 44, "reason": "Not found"}]
 }
 ```
+
+#### GET /api/images/ids
+The ids of every image the list would show for the same filters (`search`, `project`, `tags`,
+`sort` and the rest), in the same order, capped at 1,000. Used to select every matching image.
+
+```bash
+curl "https://gobananasai.com/api/images/ids?project=brand-refresh&tags=hero" \
+  -H "X-API-Key: sk_live_xxx"
+```
+
+**Response:**
+```json
+{ "data": { "ids": [44, 43, 40], "total": 3, "truncated": false } }
+```
+
+#### POST /api/images/organize
+Move up to 100 images to a project, or out of theirs, and add or remove tags. At least one of
+`project`, `addTags` and `removeTags` is required.
+
+```bash
+curl -X POST https://gobananasai.com/api/images/organize \
+  -H "X-API-Key: sk_live_xxx" \
+  -H "Content-Type: application/json" \
+  -d '{"imageIds": [42, 43], "project": {"name": "Brand Refresh"}, "addTags": ["hero"]}'
+```
+
+**Request Body:**
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| imageIds | integer[] | Yes | 1-100 image ids |
+| project | object or null | No | `{"name": "..."}` (found or created), `{"id": 7}`, or `null` to take the images out of their project |
+| addTags | string[] | No | Up to 10 tags to add (an image holds at most 20) |
+| removeTags | string[] | No | Up to 10 tags to remove |
+
+**Response:**
+```json
+{
+  "data": {
+    "updated": [42, 43],
+    "notFound": [],
+    "project": { "id": 7, "name": "Brand Refresh", "key": "brand-refresh" },
+    "addedTags": [{ "name": "hero", "key": "hero" }]
+  }
+}
+```
+
+Ids that do not exist, and other workspaces' ids, come back in `notFound`.
+
+---
+
+### Projects and Tags
+
+Names match loosely by key: "Brand Refresh", "brand_refresh" and "BRAND-REFRESH" are one project
+(key `brand-refresh`). Project names are up to 100 characters and tags up to 50; `none` is not a
+project name. Changes need an owner or manager. OAuth clients can list projects and tags
+(`images:read`). They create them by organizing images (`POST /api/images/organize`,
+`images:edit`), or by filing new images with `project` or `tags` on generate (`POST /api/images`,
+`images:generate`) and upload (`POST /api/images/upload`, `images:edit`). Renaming, merging and
+deleting are not available to them.
+
+#### GET /api/projects
+Projects, most recently used first, and how many images have no project.
+
+```json
+{
+  "data": {
+    "projects": [
+      { "id": 7, "name": "Brand Refresh", "key": "brand-refresh", "imageCount": 12, "lastImageAt": "2026-10-09 14:02:11" }
+    ],
+    "unassignedCount": 30
+  }
+}
+```
+
+#### POST /api/projects
+Find or create a project by name: `{"name": "Brand Refresh"}`. Answers 201 when it was created and
+200 when it already existed, with `{ "data": { "id", "name", "key", "created" } }`.
+
+#### PATCH /api/projects/:id
+Rename: `{"name": "Brand Refresh 2026"}`. The old name keeps finding the project. When another
+project already uses the name, it answers 409:
+
+```json
+{ "error": "Another project already uses this name", "code": "project_name_taken", "conflictProjectId": 9 }
+```
+
+#### POST /api/projects/:id/merge
+Merge into another project: `{"intoProjectId": 9}`. The images and old names move to the target.
+Returns `{ "data": { "project": { "id", "name", "key" }, "movedImages": 12 } }`.
+
+#### DELETE /api/projects/:id
+Deletes the project; its images stay, without a project.
+Returns `{ "data": { "deleted": true, "unassignedImages": 12 } }`.
+
+#### GET /api/tags
+`{ "data": { "tags": [{ "id": 3, "name": "hero", "key": "hero", "imageCount": 8 }] } }`, the most
+used first.
+
+#### DELETE /api/tags/:id
+Removes the tag from every image. Returns `{ "data": { "deleted": true } }`.
 
 ---
 
