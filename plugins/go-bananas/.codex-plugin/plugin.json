@@ -1,6 +1,6 @@
 {
   "name": "go-bananas",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Generate and edit images with Go Bananas: the remote MCP server plus a skill for characters, products, posters and conversational editing.",
   "author": { "name": "Davendra Patel", "url": "https://gobananasai.com" },
   "homepage": "https://gobananasai.com/connect",
@@ -12,7 +12,7 @@
   "interface": {
     "displayName": "Go Bananas",
     "shortDescription": "Make images, characters and product shots.",
-    "longDescription": "Generate and edit images with Go Bananas from Codex. Uses your connected ChatGPT subscription first, or your own Gemini or OpenAI key when you ask. Everything is saved to your Go Bananas gallery.",
+    "longDescription": "Generate and edit images with Go Bananas from Codex. Uses your connected ChatGPT subscription first, otherwise your workspace's own Gemini or OpenAI key. Everything is saved to your Go Bananas gallery.",
     "developerName": "Davendra Patel",
     "category": "Creative",
     "capabilities": ["Interactive", "Write"],

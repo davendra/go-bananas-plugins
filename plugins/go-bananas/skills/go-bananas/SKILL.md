@@ -1,6 +1,6 @@
 ---
 name: go-bananas
-description: "AI image generation using Go Bananas MCP tools. Prefer the signed-in user's connected ChatGPT/Codex subscription by calling get_subscription_status, then generate_with_subscription; never silently fall back to provider APIs. Use for requests to generate, create, or edit images/pictures/photos/art using AI — NOT for code that handles images. Also covers provider-backed Gemini and OpenAI generation when explicitly requested, conversational editing, reusable characters/products, batches, style presets, quota, and history."
+description: "AI image generation using Go Bananas MCP tools. Call get_subscription_status first and use generate_with_subscription when the signed-in user's ChatGPT/Codex subscription is connected; otherwise generate with the workspace's own Gemini/OpenAI keys without asking. Use for requests to generate, create, or edit images/pictures/photos/art using AI — NOT for code that handles images. Also covers provider-backed Gemini and OpenAI generation, conversational editing, reusable characters/products, batches, style presets, quota, and history."
 ---
 
 # Go Bananas! Image Generation
@@ -9,18 +9,20 @@ AI-powered image generation with Gemini Flash Lite, Gemini Flash, Gemini Pro, an
 
 ## Subscription-first routing
 
-For a normal Go Bananas image-creation request, use the connected ChatGPT/Codex subscription lane first:
+A connected ChatGPT/Codex subscription is used first, but it is optional: a workspace with its own Gemini or OpenAI keys generates with them when no subscription is connected.
 
 1. Call `get_subscription_status`.
-2. When `connected: true`, call `generate_with_subscription` with the prompt and supported aspect ratio.
-3. Return the saved image ID, URL, `source: "chatgpt_subscription"`, and remaining allowance.
-4. When it is not connected, tell the user to connect at `https://gobananasai.com` and stop. Do not call a provider-backed generation tool without explicit approval.
+2. When `connected: true`, call `generate_with_subscription` with the prompt and supported aspect ratio. Return the saved image ID, URL, `source: "chatgpt_subscription"`, and remaining allowance.
+3. Otherwise (not connected, still pending, unavailable, a ChatGPT Free plan, or an API-key-only client), use `generate_image` and the other image tools with the workspace's keys. Do not ask the user first and do not tell them to connect ChatGPT.
+4. If `generate_with_subscription` fails because the subscription cannot run (runner unavailable, disconnected, allowance used up, image generation not available on the plan), generate with `generate_image` and tell the user in your reply that the workspace's Gemini/OpenAI keys were used.
+5. If ChatGPT declined the prompt, report that. Do not retry with the workspace's keys.
+6. Only when there is no subscription and `providerKeysConfigured` is `false` does `generate_image` refuse; then tell the user to connect ChatGPT at `https://gobananasai.com` or add a Gemini/OpenAI key to the workspace.
 
 This lane requires Go Bananas user OAuth. An API-key-only MCP client has tenant identity but cannot access an individual user's subscription. The subscription runner does not use the tenant's Gemini or OpenAI API keys and never exposes ChatGPT credentials.
 
-Use `generate_image`, `edit_image`, `continue_editing`, and other provider-backed tools only when the user explicitly requests a Go Bananas provider/API model or approves fallback after the subscription lane cannot run. `openai-gpt-image-2` is an OpenAI API model billed through configured provider credentials; it is not the ChatGPT subscription lane.
+`openai-gpt-image-2` is an OpenAI API model billed through configured provider credentials; it is not the ChatGPT subscription lane.
 
-Portable subscription editing is not currently exposed. Explain that limitation and obtain explicit approval before using a provider-backed editing tool.
+Editing has no subscription path: `edit_image`, `continue_editing`, `edit_uploaded_image` and the other edit tools use the workspace's keys directly.
 
 For the human CLI, `gb generate` uses the configured `auto` lane. Use `--subscription` to require subscription generation or `--provider` to explicitly use configured Gemini/OpenAI credentials. Always report the returned `source` and `providerApiUsed` provenance fields.
 
