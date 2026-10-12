@@ -14,7 +14,7 @@ A connected ChatGPT/Codex subscription is used first, but it is optional: a work
 1. Call `get_subscription_status`.
 2. When `connected: true`, call `generate_with_subscription` with the prompt and supported aspect ratio. Return the saved image ID, URL, `source: "chatgpt_subscription"`, and remaining allowance.
 3. Otherwise (not connected, still pending, unavailable, a ChatGPT Free plan, or an API-key-only client), use `generate_image` and the other image tools with the workspace's keys. Do not ask the user first and do not tell them to connect ChatGPT.
-4. If `generate_with_subscription` fails because the subscription cannot run (runner unavailable, disconnected, allowance used up, image generation not available on the plan), generate with `generate_image` and tell the user in your reply that the workspace's Gemini/OpenAI keys were used.
+4. If `generate_with_subscription` fails because the subscription cannot run (runner unavailable, disconnected, allowance used up, image generation not available on the plan), call `generate_image` with `generation_lane: "provider"` and tell the user in your reply that the workspace's Gemini/OpenAI keys were used. Without `generation_lane: "provider"`, a session that still shows as connected would send the call straight back to the subscription.
 5. If ChatGPT declined the prompt, report that. Do not retry with the workspace's keys.
 6. Only when there is no subscription and `providerKeysConfigured` is `false` does `generate_image` refuse; then tell the user to connect ChatGPT at `https://gobananasai.com` or add a Gemini/OpenAI key to the workspace.
 

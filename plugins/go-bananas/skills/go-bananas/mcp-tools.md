@@ -16,7 +16,7 @@ Check whether the current OAuth user has a connected subscription runner. Call t
 
 ### generate_with_subscription
 
-Generate exactly one PNG with the connected subscription and save it to the Go Bananas gallery.
+Generate exactly one PNG with the connected subscription and save it to the Go Bananas gallery. If it fails because the subscription cannot run (disconnected, allowance used up, runner unavailable), call `generate_image` with `generation_lane: "provider"` and say the workspace's keys were used; if ChatGPT declined the prompt, report it and do not retry.
 
 **Parameters:**
 
