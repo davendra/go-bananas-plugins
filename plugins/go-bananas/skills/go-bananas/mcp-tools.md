@@ -10,13 +10,13 @@ These tools require Go Bananas user OAuth. They use the connected ChatGPT/Codex 
 
 ### get_subscription_status
 
-Check whether the current OAuth user has a connected subscription runner. Call this before normal image creation.
+Check whether the current OAuth user has a connected subscription runner. Call this before normal image creation. When `connected` is `false` (including a ChatGPT Free plan, which has no image generation), use `generate_image` with the workspace's keys; `providerKeysConfigured` says whether the workspace has a key for its default model.
 
 **Parameters:** None
 
 ### generate_with_subscription
 
-Generate exactly one PNG with the connected subscription and save it to the Go Bananas gallery.
+Generate exactly one PNG with the connected subscription and save it to the Go Bananas gallery. If it fails because the subscription cannot run (disconnected, allowance used up, runner unavailable), call `generate_image` with `generation_lane: "provider"` and say the workspace's keys were used; if ChatGPT declined the prompt, report it and do not retry.
 
 **Parameters:**
 
