@@ -336,6 +336,50 @@ Tell the model what NOT to include. Negative prompts are an easy way to stop the
 
 ---
 
+## Real-camera realism
+
+To make a picture read as a capture from a real camera, write the prompt camera-first and keep the flaws a real device makes. No photography vocabulary is needed from the user.
+
+1. **Order**: one sentence each, in this order: Camera, subject and action, Lighting, Texture. Open with a kind of device and how it was held (a single-use film camera with its flash, a phone front camera at arm's length, a paused frame from a home camcorder, a fixed security camera high in a corner, a fisheye lens at knee height).
+2. **Device flaws**: add the ones that suit the scene: direct-flash falloff, grain or sensor noise, compression, a crooked or off-center frame, motion blur, clipped highlights.
+3. **No boosters**: leave out "8K", "4K", "masterpiece", "best quality", "ultra detailed" and "hyperrealistic". They push toward a polished render.
+4. **negative_prompt**: studio lighting, shallow depth of field, cinematic color grade, airbrushed skin, on-screen text, timestamps.
+5. **Characters**: pass a saved character as `reference_assets: [{ role: "character", character_id: 5 }]` and keep the camera sentence first. The server appends the identity lock at the end of the prompt.
+6. **Save the look**: put the camera, lighting and texture sentences in `create_style_preset` (negative as `negative_prompt`), then reuse it with `style_preset_name`.
+7. **Contrast ladder**: push an idea one rung at a time with the same camera look: the expected scene, a specific situation, a personality, then a contrast with its opposite (a grandmother, at a skate park, fearless mid-kickflip, in a lace dress and pearls).
+8. **Stills for video**: generate at the video's aspect ratio (16:9 or 9:16), then give the video prompt one short camera-movement paragraph (handheld tremor, crash zoom with focus loss, whip pan with overshoot, autofocus hunting) and change only the scene.
+
+```
+A snapshot from a single-use film camera held at chest height, the frame slightly crooked. A bike courier in a yellow raincoat laughs mid-jump over a puddle beside a bus shelter. The built-in flash fires straight at them and the wet street behind falls into darkness. Coarse grain, faded colors and soft corners from the plastic lens.
+```
+
+```
+A paused frame from a home camcorder on a tripod set too low, tilted a few degrees. A toddler in a paper crown reaches for a birthday cake while two relatives lean in from the edges. Warm overhead room light with a blown-out window behind. Soft interlaced smear, muted color and compression blocks in the dark areas.
+```
+
+### Built-in camera looks (`camera_look`)
+
+The quickest route: pass `camera_look` to `generate_image` (also `start_generation`, `generate_with_subscription`, and `batch_generate` per item or in `defaults`) and Go Bananas writes the camera sentence before the prompt and the lighting and texture sentences after it. The look's negative prompt and ratio apply only when nothing else sets them. Not with `enhance_prompt` or `image_to_edit_id`.
+
+Describe only the subject, action and setting; the look supplies the camera, lens and light, so leave out your own camera or lighting words such as 85mm, golden hour or cinematic. They compete with the look and can override it.
+
+| Look | Ratio | What it gives |
+|------|-------|---------------|
+| `disposable-flash` | 1:1 | single-use film camera, direct flash, black background, warm grain |
+| `skate-fisheye` | 1:1 | fisheye lens at knee height, curved horizon, on-camera flash |
+| `old-phone-selfie` | 9:16 | 2010s phone front camera held at arm's length; best with people, since with an animal or object it adds a person holding the phone |
+| `camcorder-still` | 16:9 | paused frame from an early-2000s home video; a good video first frame |
+| `point-and-shoot-night` | 16:9 | compact digital camera at night, tilted horizon, flash, JPEG noise |
+| `street-candid-35mm` | 16:9 | unposed daylight shot on 35mm film from a few metres away |
+| `security-camera` | 16:9 | fixed high-corner CCTV still, near-monochrome |
+| `instant-film` | 1:1 | square instant-camera snapshot, soft focus, faded colour |
+
+```json
+{ "prompt": "A bike courier in a yellow raincoat laughs mid-jump over a puddle beside a bus shelter.", "camera_look": "disposable-flash" }
+```
+
+---
+
 ## Complete Prompt Examples
 
 ### Professional Headshot
@@ -364,7 +408,7 @@ Negative: "busy background, flat lighting, low quality"
 Prompt: "Epic fantasy castle on a cliff at sunset, golden hour
 lighting, volumetric clouds, dramatic sky with purple and orange,
 birds flying in distance, detailed stone architecture,
-cinematic wide shot, concept art style, highly detailed"
+cinematic wide shot, concept art style"
 
 Negative: "modern elements, people, text"
 ```

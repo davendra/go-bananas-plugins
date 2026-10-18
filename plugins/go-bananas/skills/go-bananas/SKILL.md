@@ -110,6 +110,9 @@ _From Google DeepMind's official Gemini Pro guide_
 **Bad**: `dog, park, 4k, realistic`
 **Good**: "A golden retriever playing fetch in a sunny park, captured in photorealistic detail"
 
+For photos that should look like real camera captures, see **Real-camera realism** in `prompt-patterns.md` (camera first, device flaws, no "8K" or "masterpiece").
+The quickest route is `camera_look` (for example `"disposable-flash"` or `"camcorder-still"`): describe only the subject, action and setting and Go Bananas writes the camera, lighting and texture sentences. For several shots in one look, use `batch_generate` with `defaults.camera_look`.
+
 ## Advanced Techniques
 
 | Technique            | Description                                                                            |

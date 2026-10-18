@@ -49,6 +49,7 @@ Generate new images from text prompts.
 | model_id | string | No | gemini-flash-lite-image (default), gemini-nano-banana-2.1, gemini-pro-image, openai-gpt-image-2, openai-gpt-image-2.5-flare or openai-gpt-image-2.5-sunburst |
 | project | string | No | Project to file the new images under. Only when the user names one, then keep passing it; "none" for no project. See [Projects and Tags](#projects-and-tags-2-tools) |
 | tags | string[] | No | Tags to add to the new images (up to 10), only when the user asks |
+| camera_look | string | No | Built-in real-camera look: disposable-flash, skate-fisheye, old-phone-selfie, camcorder-still, point-and-shoot-night, street-candid-35mm, security-camera or instant-film. Describe only subject, action and setting; Go Bananas adds the camera, lighting and texture sentences. Not with enhance_prompt or image_to_edit_id |
 
 Every tool that makes images takes `project` and `tags`.
 
@@ -220,16 +221,16 @@ Search across all images with filters. Each result shows its project and tags, e
 
 ### batch_generate
 
-Generate multiple prompts in one queued batch operation.
+Generate 1-8 images in one queued batch operation; each item succeeds or fails on its own.
 
 **Parameters:**
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| prompts | array | Yes | Prompt list (1-8) |
-| aspect_ratio | string | No | Shared aspect ratio |
-| model_id | string | No | Shared model override |
-| style_preset_id | integer | No | Apply a saved style preset |
-| reference_images | array | No | Shared reference images |
+| items | array | Yes | 1-8 items, each `{ prompt, model_id?, resolution_tier?, aspect_ratio?, negative_prompt?, system_instruction?, style_preset_name?, camera_look? }` |
+| defaults | object | No | The same optional fields, shared by every item; an item's own values win |
+| session_id | string | No | Session handle for grouping the images |
+
+Example: `{ "items": [{ "prompt": "A courier laughs mid-jump over a puddle" }, { "prompt": "The same courier locks a bike to a railing at night" }], "defaults": { "camera_look": "disposable-flash" } }`
 
 ---
 
@@ -693,7 +694,7 @@ Get help documentation for tools and workflows.
 |-----------|------|----------|-------------|
 | tool_name | string | No | Specific tool help |
 | category | string | No | generation, editing, characters, products, styles, analytics |
-| workflow | string | No | consistent_characters, conversational_editing, product_marketing, style_branding |
+| workflow | string | No | consistent_characters, conversational_editing, product_marketing, style_branding, realistic_photos (see get_help for the full list) |
 
 ---
 
