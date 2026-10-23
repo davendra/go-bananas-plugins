@@ -24,8 +24,10 @@ Generate exactly one PNG with the connected subscription and save it to the Go B
 | ------------ | ------ | -------- | --------------------------------------------------------- |
 | prompt       | string | Yes      | Image prompt (3-8000 characters)                          |
 | aspect_ratio | string | No       | square, portrait, landscape, 1:1, 4:5, 5:4, 9:16, or 16:9 |
+| camera_look  | string | No       | Built-in real-camera look, the same looks as `generate_image`. Its aspect ratio applies unless `aspect_ratio` is sent |
+| reference_sheet | string | No    | Built-in identity plate: face-plate, outfit-plate or three-panel. This tool takes no references, so use it for a text-only face plate; outfit plates and three-panel sheets need `generate_image` with `reference_assets`. Not with camera_look |
 
-Do not substitute `generate_image` when this tool is unavailable or fails unless the user explicitly approves provider-backed fallback.
+A camera look's or reference sheet's negative prompt is added as a closing `Avoid:` line, since this lane has no negative prompt field.
 
 ---
 
@@ -50,6 +52,8 @@ Generate new images from text prompts.
 | project | string | No | Project to file the new images under. Only when the user names one, then keep passing it; "none" for no project. See [Projects and Tags](#projects-and-tags-2-tools) |
 | tags | string[] | No | Tags to add to the new images (up to 10), only when the user asks |
 | camera_look | string | No | Built-in real-camera look: disposable-flash, skate-fisheye, old-phone-selfie, camcorder-still, point-and-shoot-night, street-candid-35mm, security-camera or instant-film. Describe only subject, action and setting; Go Bananas adds the camera, lighting and texture sentences. Not with enhance_prompt or image_to_edit_id |
+| reference_sheet | string | No | Built-in identity plate: face-plate (1:1), outfit-plate (9:16) or three-panel (16:9), with flat shadowless light on an even 18% grey. Describe only the person and the outfit; Go Bananas adds the framing, light and backdrop sentences. Not with camera_look, enhance_prompt or image_to_edit_id. See prompt-patterns.md |
+| reference_assets | array | No | Typed references, each `{ role, <one source>, weight?, notes?, scope? }`. Roles: logo, style, composition, template, character, product. Source: one of image_id, image_url, r2_key, character_id (role character), product_id (role product) or reference_group_id. `scope` (role character only): face (the face and bone structure only), wardrobe (outfit, footwear, jewellery, hair colour and cut, build and body markings) or full (default). Total images must fit the model (Gemini 14, OpenAI 16). Always uses the workspace's keys, never the subscription |
 
 Every tool that makes images takes `project` and `tags`.
 
@@ -226,11 +230,13 @@ Generate 1-8 images in one queued batch operation; each item succeeds or fails o
 **Parameters:**
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| items | array | Yes | 1-8 items, each `{ prompt, model_id?, resolution_tier?, aspect_ratio?, negative_prompt?, system_instruction?, style_preset_name?, camera_look? }` |
+| items | array | Yes | 1-8 items, each `{ prompt, model_id?, resolution_tier?, aspect_ratio?, negative_prompt?, system_instruction?, style_preset_name?, camera_look?, reference_sheet? }` |
 | defaults | object | No | The same optional fields, shared by every item; an item's own values win |
 | session_id | string | No | Session handle for grouping the images |
 
 Example: `{ "items": [{ "prompt": "A courier laughs mid-jump over a puddle" }, { "prompt": "The same courier locks a bike to a railing at night" }], "defaults": { "camera_look": "disposable-flash" } }`
+
+Batch items take no references, so `reference_sheet` here suits text-only face plates. An item with both `reference_sheet` and `camera_look` is refused.
 
 ---
 
@@ -253,6 +259,8 @@ Start a job and get an `execution_id`. Returns images inline if the job finishes
 Only the API key, or OAuth user and client, that started the job can poll it (OAuth: `images:read`).
 
 **Parameters:** `execution_id` (string, required). Returns `status`, `progress_percent`, `current_step`, `started_at`, `completed_at`, `duration_ms`, `log_entries`, `images` when completed, `error_message` when failed.
+
+A job whose `current_step` starts with "Outcome uncertain" stays `running` and will not run again; keep polling until it settles, and do not start a replacement. See error-handling.md.
 
 ### cancel_generation
 

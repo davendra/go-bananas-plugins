@@ -66,7 +66,7 @@ curl -X POST https://gobananasai.com/api/images \
 
 ## Provider-backed model selection
 
-This section applies only after the user explicitly chooses or approves provider-backed generation. Before large batches, OpenAI high-quality generations, or 2K/4K work, call:
+This section applies whenever generation uses the workspace's own Gemini/OpenAI keys (routing steps 3 and 4 above, or a provider-only tool or field). Before large batches, OpenAI high-quality generations, or 2K/4K work, call:
 
 ```
 list_models()
@@ -112,6 +112,7 @@ _From Google DeepMind's official Gemini Pro guide_
 
 For photos that should look like real camera captures, see **Real-camera realism** in `prompt-patterns.md` (camera first, device flaws, no "8K" or "masterpiece").
 The quickest route is `camera_look` (for example `"disposable-flash"` or `"camcorder-still"`): describe only the subject, action and setting and Go Bananas writes the camera, lighting and texture sentences. For several shots in one look, use `batch_generate` with `defaults.camera_look`.
+For identity plates of a recurring character, pass `reference_sheet`: `face-plate` first, then `outfit-plate` with the face plate as a `character` reference with `scope: "face"`, then `three-panel` with the face plate `scope: "face"` and the outfit plate `scope: "wardrobe"`. Flat shadowless light on an even 18% grey; not with `camera_look`, `enhance_prompt` or `image_to_edit_id`. `generate_with_subscription` and `batch_generate` take no references, so steps 2 and 3 use `generate_image` (or `start_generation`) on the workspace's keys. See **Reference sheets** in `prompt-patterns.md`.
 
 ## Advanced Techniques
 
@@ -174,7 +175,7 @@ For detailed information, see:
 - **prompt-patterns.md** - Best practices for writing effective prompts
 - **models.md** - Detailed Flash vs Pro feature comparison
 - **use-cases.md** - Templates for common scenarios (marketing, infographics, characters)
-- **error-handling.md** - Quota management, rate limits, and graceful failure patterns
+- **error-handling.md** - MCP error codes, rejected keys, rate limits, quota, uncertain async outcomes, and graceful failure patterns
 
 ## Example Workflows
 
