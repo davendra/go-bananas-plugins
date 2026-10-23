@@ -378,6 +378,32 @@ Describe only the subject, action and setting; the look supplies the camera, len
 { "prompt": "A bike courier in a yellow raincoat laughs mid-jump over a puddle beside a bus shelter.", "camera_look": "disposable-flash" }
 ```
 
+### Reference sheets (`reference_sheet`)
+
+For a recurring character, make identity plates that later images or video models copy the person from. Pass `reference_sheet` to `generate_image` (also `start_generation`, `generate_with_subscription`, and `batch_generate` per item or in `defaults`). Go Bananas writes the layout sentence before the prompt and flat shadowless light on an even 18% grey after it, so the scene a plate is later used in sets the light. The sheet's negative prompt and ratio apply only when nothing else sets them. Not with `camera_look`, `enhance_prompt` or `image_to_edit_id`.
+
+Describe only the person and the outfit; the sheet supplies the framing, pose, light and background. Name a marker by its side of the picture ("a silver ring in the ear on the right side of the picture"): "her left ear" can come back mirrored.
+
+| Sheet | Ratio | What it gives |
+|-------|-------|---------------|
+| `face-plate` | 1:1 | tight chest-up identity portrait, square to the lens, flat light on 18% grey |
+| `outfit-plate` | 9:16 | full-body front view, standing square, flat light on 18% grey |
+| `three-panel` | 16:9 | headless full-body front, full-body rear and chest-up face in one wide frame, flat light on 18% grey |
+
+Build a kit in order:
+
+1. `face-plate`, from the description alone.
+2. `outfit-plate`, with the face plate as `reference_assets: [{ role: "character", image_id: <face plate id>, scope: "face" }]`.
+3. `three-panel`, with the face plate (`scope: "face"`) and the outfit plate (`scope: "wardrobe"`).
+
+`scope` works on any `reference_assets` item with role `character`: `face` gives the face and bone structure only; `wardrobe` gives the outfit, footwear, jewellery, hair colour and cut, build and body markings; `full` (the default) keeps the whole look. With a face plate and an outfit plate, the prompt names the outfit plate as the source of hair styling, jewellery, clothing and skin markings. `scope` on any other role is refused.
+
+`generate_with_subscription` and `batch_generate` take no references, so use them only for a face plate. Steps 2 and 3 need `generate_image` (or `start_generation`), which runs on the workspace's keys whenever `reference_assets` is sent.
+
+```json
+{ "prompt": "A woman in her thirties with a short ash-blonde crop and a silver ring in the ear on the right side of the picture, in an olive field jacket.", "reference_sheet": "three-panel", "reference_assets": [{ "role": "character", "image_id": 101, "scope": "face" }, { "role": "character", "image_id": 102, "scope": "wardrobe" }] }
+```
+
 ---
 
 ## Complete Prompt Examples

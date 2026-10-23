@@ -492,24 +492,29 @@ curl "https://gobananasai.com/images/tenant/2025-01-15/image.png?download=true" 
 
 ## Error Responses
 
-All errors return JSON with `error` field:
+All errors return JSON with `error` field. Most requests that can never succeed (400, 404, 409) also carry a `code`; a few older checks, such as `Invalid JSON payload` and the `PATCH /api/products/:id` field check, do not:
 
 ```json
 {
   "error": "Image not found",
-  "code": "NOT_FOUND"
+  "code": "image_not_found"
 }
 ```
 
 **HTTP Status Codes:**
 | Code | Meaning |
 |------|---------|
-| 400 | Bad Request - Invalid parameters |
+| 400 | Bad Request - Invalid parameters (`invalid_request`, `unknown_model`, `model_not_allowed`, `invalid_reference_assets`). Fix the request; do not retry |
 | 401 | Unauthorized - Invalid or missing API key |
+| 402 | Payment Required - Monthly storage quota exceeded |
 | 403 | Forbidden - Tenant access denied |
-| 404 | Not Found - Resource doesn't exist |
-| 429 | Too Many Requests - Rate limit exceeded |
-| 500 | Internal Server Error |
+| 404 | Not Found - Resource doesn't exist in this workspace (`image_not_found`, `character_not_found`, ...) |
+| 409 | Conflict - Name already in use (`character_name_taken`, `product_name_taken`, ...) |
+| 422 | Unprocessable Content - The image provider rejected the workspace's API key (`provider_credentials_rejected`). Fix the key in workspace settings |
+| 429 | Too Many Requests - The workspace's rate limit exceeded |
+| 500 | Internal Server Error - The provider's own message (timeout, outage, per-minute rate limit, billing, daily quota), or a generic message with an `errorId` |
+
+See error-handling.md for which errors to retry.
 
 ---
 
