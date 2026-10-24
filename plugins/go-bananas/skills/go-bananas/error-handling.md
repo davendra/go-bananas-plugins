@@ -29,6 +29,7 @@ Fix the arguments. Do not retry the same call. It covers:
 - An option the model does not support, or a prompt over the model's limit once presets, scenes, a camera look or a reference sheet are added
 - An ID or name that is not in this workspace (image, session, character, product, scene, style preset, reference group, project), or `continue_editing` in a session with no image yet
 - A name another saved item already uses, or a revert with nothing archived
+- A rejected `reference_assets` entry, `Image generation failed: reference_assets[N]: …` (or `Image generation failed: Too many reference …`): two sources in one item, a reserved role, `scope` on a role other than `character`, more images than the model takes, an image the workspace cannot use, or one under 512x512. Fix that entry. Over REST it is 400 `invalid_reference_assets`
 - `generate_image` with `reference_sheet` and `camera_look`, `enhance_prompt` or `image_to_edit_id`, or with `camera_look` and `enhance_prompt` or `image_to_edit_id`; a `batch_generate` item with both `reference_sheet` and `camera_look`
 
 The MCP error carries only the message, no `code` field. REST answers the same cases with 400, 404 or 409 and a `code`: `unknown_model`, `model_not_allowed`, `invalid_request`, `*_not_found` (for example `image_not_found`, `character_not_found`) or `*_name_taken` (for example `character_name_taken`). `start_generation` returns `{ "error": { "status": 400, "code": "...", "message": "..." } }` in an `isError` result instead.
@@ -37,7 +38,7 @@ The MCP error carries only the message, no `code` field. REST answers the same c
 
 Read the message before you retry. Many `-32603` errors are not temporary.
 - `An unexpected error occurred. Please try again. (errorId: <uuid>)` is a database or network failure. Retry with backoff (5s, then 15s). If it still fails, report it to the user with the errorId.
-- `Image generation failed: reference_assets[N]: …` is your mistake, although it arrives as `-32603`: two sources in one item, a reserved role, `scope` on a role other than `character`, more images than the model takes, an image the workspace cannot use, or one under 512x512. Fix that entry; do not retry the same call. Over REST it is 400 `invalid_reference_assets`.
+- `Image generation failed: reference_assets[N] (<role>): …` is a stored reference image the server could not read. Retry with backoff.
 - Any other text is the provider's or the workspace's own message (rejected key, rate limit, billing, quota, timeout, outage). Handle it as the sections below say.
 
 ## Rejected Credentials: Do Not Retry
