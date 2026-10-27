@@ -31,6 +31,7 @@ Fix the arguments. Do not retry the same call. It covers:
 - A name another saved item already uses, or a revert with nothing archived
 - A rejected `reference_assets` entry, `Image generation failed: reference_assets[N]: …` (or `Image generation failed: Too many reference …`): two sources in one item, a reserved role, `scope` on a role other than `character`, more images than the model takes, an image the workspace cannot use, or one under 512x512. Fix that entry. Over REST it is 400 `invalid_reference_assets`
 - `generate_image` with `reference_sheet` and `camera_look`, `enhance_prompt` or `image_to_edit_id`, or with `camera_look` and `enhance_prompt` or `image_to_edit_id`; a `batch_generate` item with both `reference_sheet` and `camera_look`
+- A provider content block: the text ends `(code: content_blocked). Rephrase the prompt or change the references.` See [Blocked Generations](#blocked-generations-rewrite-once-then-ask)
 
 The MCP error carries only the message, no `code` field. REST answers the same cases with 400, 404 or 409 and a `code`: `unknown_model`, `model_not_allowed`, `invalid_request`, `*_not_found` (for example `image_not_found`, `character_not_found`) or `*_name_taken` (for example `character_name_taken`). `start_generation` returns `{ "error": { "status": 400, "code": "...", "message": "..." } }` in an `isError` result instead.
 
@@ -45,9 +46,37 @@ Read the message before you retry. Many `-32603` errors are not temporary.
 
 | Message | Action |
 |---------|--------|
-| `Your image provider rejected its API key. Check the provider API key in workspace settings, then try again.` | The workspace's Gemini or OpenAI key is invalid or expired. Tell the user to replace it in workspace settings. REST answers 422 `provider_credentials_rejected`; in a REST batch or bulk edit, the item carries the same text as its `error` |
+| `Your image provider rejected its API key. Check the provider API key in workspace settings, then try again.` | The workspace's Gemini or OpenAI key is invalid or expired. Tell the user to replace it in workspace settings. REST answers 422 `provider_credentials_rejected`; in a REST batch or bulk edit, the item carries the same text as its `error` and `code: "provider_credentials_rejected"`, and a failed job the same `errorCode` |
 | `The Higgsfield credentials were rejected. Replace provider_api_keys.higgsfield (api_key:api_key_secret) in the workspace settings.` | From `request_higgsfield_video` or `get_higgsfield_video_status`. Tell the user to replace the Higgsfield key |
 | `No active Gemini API keys are configured for tenant ...` (or OpenAI) | The workspace has no key for that provider. Tell the user to add one in workspace settings |
+
+## Blocked Generations: Rewrite Once, Then Ask
+
+The provider refused the prompt or the references. Sending the same request again is refused again, and Go Bananas never retries it for you.
+
+**How to recognise one**
+- MCP: a `-32602` whose text ends `(code: content_blocked). Rephrase the prompt or change the references.` The text before it gives the provider's reason, such as `Reason: IMAGE_SAFETY`, `Reason: moderation_blocked`, or "the output matched existing content" (Gemini recitation).
+- `batch_generate`: the item's line ends `(code: content_blocked)`. The other items are unaffected.
+- `get_generation_status`: `status: "failed"` with `error_code: "content_blocked"`.
+- REST: 422 `content_blocked`; `errorCode: "content_blocked"` on a failed async job; `code` on a batch or bulk-edit item.
+- Subscription lane: "ChatGPT declined this prompt…", with no code. Handle it the same way.
+
+**Why an ordinary request gets blocked.** Filters judge the whole request, so several mild signals add up:
+- A real person's name, or a reference photo of a real person, together with anything intimate, violent or political
+- Intensity words that add no information ("brutal", "bloody", "sexy", "massive") and exaggerated body descriptions
+- A named character, franchise, logo or artwork: Gemini's recitation check stops images that copy existing work
+- A reference image can cause the block on its own, even when the text is mild
+
+**One honest rewrite**
+1. Read the reason. For recitation, describe the design in your own words instead of naming it.
+2. Drop the words that add intensity but not information. Describe size by proportion ("about twice the height of the door") rather than superlatives.
+3. Carry a person's identity in a reference (`create_character`, `reference_assets`) rather than a real person's name.
+4. Keep the subject the user asked for. A rewrite clarifies the request; it does not hide it from the filter. If the request is something the provider does not allow, say so instead.
+5. Send the rewrite once, and tell the user what you changed.
+
+If the rewrite is blocked too, stop and ask the user. Do not keep rewording to find a phrasing that passes. Do not switch `model_id` or provider just to get past a filter: another model is fine only when the user chooses it. After a ChatGPT decline, never move to the workspace's provider keys.
+
+*Adapted from the blocked-prompt guidance in [scenario-labs/skills](https://github.com/scenario-labs/skills) (MIT).*
 
 ## Rate Limits and Quotas
 
@@ -79,7 +108,7 @@ After a billing or daily-quota rejection, `check_quota` shows it in `details.pro
 "Uncertain" is not a status value. An uncertain job keeps `status: "running"` and says so in `current_step`. It is never sent to the provider again.
 
 - **`start_generation` / `get_generation_status`**:
-  - `failed` means no image was saved. Fix the cause, then start a new job with a new `idempotency_key`; reusing the old key answers 409.
+  - `failed` means no image was saved. Fix the cause, then start a new job with a new `idempotency_key`; reusing the old key answers 409. With `error_code: "content_blocked"`, see [Blocked Generations](#blocked-generations-rewrite-once-then-ask).
   - `current_step` "Outcome uncertain — settling from saved images at the job deadline" means the job stopped after it was sent to the provider, so an image may exist. Keep polling; do not start a new job. The job settles about 14 minutes after it started: `completed` with its images if any were saved, otherwise `failed` with "Generation outcome uncertain: no image was saved before the job deadline. It will not run again."
 - **Async edit** (REST `POST /api/edit-image` with `Prefer: respond-async`, polled at `/api/executions/<id>`):
   - `failed` means the edit failed before its image started saving, so nothing was saved. Its `Idempotency-Key` stays reserved (409), so a retry needs a new key. After a timeout the provider may still have charged.
@@ -102,7 +131,7 @@ Track consecutive errors. If you encounter **3+ consecutive failures** from gene
 - Provider billing or daily quota
 - Monthly storage quota exceeded (402) - no amount of waiting helps within the billing period
 - Authentication errors (401) - credentials are invalid
-- A prompt ChatGPT declined on the subscription lane
+- A prompt ChatGPT declined on the subscription lane, or a `content_blocked` refusal: at most one rewrite, then ask the user (see [Blocked Generations](#blocked-generations-rewrite-once-then-ask))
 
 ### Wait and Retry (Up to 1 retry)
 - Workspace rate limit - wait the seconds the message gives

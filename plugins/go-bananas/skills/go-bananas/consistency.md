@@ -44,7 +44,7 @@ Where the baseline lives:
 
 | Symptom | Fix |
 |---|---|
-| One image is off (wrong scar side, wrong eye colour) | `edit_image` on that image: "make the scar over the left eyebrow match the reference; change nothing else" |
+| One image is off (wrong scar side, wrong eye colour) | `edit_image` on that image, naming the feature itself, since it sees only that image and not the references: "move the scar to above the left eyebrow; change nothing else" |
 | Every image is slightly off in the same way | Replace the references with a clearer picture (`update_character` with the new full list), or a front-on face plate (`reference_sheet: "face-plate"`) |
 | The character's old background keeps appearing | Either `base_prompt` names a setting (remove it with `update_character`) or the reference picture shows one (replace it with a picture on a plain background, such as a face plate). Then describe the new setting in full in `scene_prompt` |
 | Two characters swap features | `generate_with_multiple_characters`, naming each character with their place in the frame ("Hero Henry on the left") |

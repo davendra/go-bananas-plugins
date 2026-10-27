@@ -51,26 +51,19 @@ large text area on right for headline '[TEXT]',
 }
 ```
 
-### Viral Video Thumbnail (Pro Model)
+### Video Thumbnail
 
-*Identity locking + text + graphics in a single pass*
+*A face from an approved reference, the user's exact headline, one subject that reads at feed size. Full method: `thumbnails.md`.*
 
 ```json
 {
-  "prompt": "Design a viral video thumbnail using the person from Image 1.
-Face Consistency: Keep the person's facial features exactly the same as Image 1, but change their expression to look excited and surprised.
-Action: Pose the person on the left side, pointing their finger towards the right side of the frame.
-Subject: On the right side, place a high-quality image of [PRODUCT/TOPIC].
-Graphics: Add a bold yellow arrow connecting the person's finger to the subject.
-Text: Overlay massive, pop-style text in the middle: '[HEADLINE]'. Use a thick white outline and drop shadow.
-Background: A blurred, bright [SETTING] background. High saturation and contrast.",
+  "prompt": "Video thumbnail. The presenter from the reference on the left, excited, pointing right at [PRODUCT/TOPIC] on the right. Headline '[EXACT HEADLINE]' in thick white capitals with a black outline across the top. Bright, high-contrast [SETTING] background, the bottom right corner left empty.",
   "aspect_ratio": "16:9",
-  "model_id": "gemini-pro-image",
-  "reference_images": ["<r2_key of person_reference.jpg>"]
+  "reference_assets": [{ "role": "character", "character_id": 5 }]
 }
 ```
 
-**Key technique**: The phrase "Keep the person's facial features exactly the same as Image 1" is critical for identity locking.
+**Key technique**: Take the face from an approved reference (a saved character or an uploaded photo as `{ "role": "character", "image_id": 42 }`), quote only the words the user gave, read them back letter by letter, and check the response's thumbnail to see that it still reads small.
 
 ---
 
