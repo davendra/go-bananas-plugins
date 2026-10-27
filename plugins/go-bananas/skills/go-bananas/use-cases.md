@@ -414,40 +414,25 @@ Generate multiple options:
   "n": 4
 }
 ```
-Then use `continue_editing` on the best result.
+Then use `edit_image` with the best result's `image_id`. `continue_editing` edits the session's last image, which may not be the best one.
 
 ---
 
 ## Storyboarding & Sequential Art (Pro Model)
 
-### Multi-Scene Story
-```json
-{
-  "prompt": "Create an addictively intriguing 9-part story with 9 images
-featuring [CHARACTER DESCRIPTION] in an award-winning [GENRE] commercial.
-The story should have emotional highs and lows, ending on [ENDING DESCRIPTION].
-The identity of the character and their attire must stay consistent throughout
-but they can and should be seen from different angles and distances.
-Please generate images one at a time.
-Make sure every image is in a 16:9 landscape format.",
-  "aspect_ratio": "16:9",
-  "model_id": "gemini-pro-image"
-}
-```
+Plan the beats first, then make one image per panel. `storyboards.md` has the full method (beat table, baseline, screen direction, text-free art).
 
-### Character Consistency Series (with saved character)
+### One Panel (with saved character)
+Send one call per row of the beat table. Keep `[BASELINE]` word for word in every panel and change only the beat sentence:
 ```json
 {
   "character_name": "[SAVED_CHARACTER]",
-  "scene_prompt": "Create a 10-part story with [CHARACTER] going on [ADVENTURE].
-The story is thrilling throughout with emotional highs and lows
-and ends in a happy moment.
-Keep the attire and identity consistent, but vary expressions and angles
-throughout all 10 images.
-Generate one scene at a time.",
+  "scene_prompt": "[BASELINE: style, palette and setting]. Medium shot from a low angle: [CHARACTER] climbs the oak trunk, facing right.",
+  "override_negative_prompt": "text, captions, speech bubbles, panel numbers, borders",
   "aspect_ratio": "16:9"
 }
 ```
+`override_negative_prompt` replaces the character's saved negative prompt, so repeat anything that one held.
 
 ### Movie Concept Art
 ```json
