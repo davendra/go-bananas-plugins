@@ -5,7 +5,7 @@ description: "AI image generation using Go Bananas MCP tools. Call get_subscript
 
 # Go Bananas! Image Generation
 
-AI-powered image generation with Gemini Flash Lite, Gemini Flash, Gemini Pro, and OpenAI GPT Image 2 models, deployed on Cloudflare Workers.
+AI-powered image generation with Nano Banana 2 Lite, Nano Banana 2.1, Go Bananas! Pro and the OpenAI GPT Image 2 and 2.5 models, deployed on Cloudflare Workers.
 
 ## Subscription-first routing
 
@@ -101,7 +101,7 @@ _From Google DeepMind's official Gemini Pro guide_
 
 | Rule                       | Description                                                         |
 | -------------------------- | ------------------------------------------------------------------- |
-| **1. Edit, Don't Re-roll** | If 80% correct, use `continue_editing` instead of regenerating      |
+| **1. Edit, Don't Re-roll** | If 80% correct, edit it (`edit_image` on its `image_id`) instead of regenerating |
 | **2. Natural Language**    | Write full sentences like briefing an artist, not tag soups         |
 | **3. Materiality**         | Describe textures: "brushed steel", "soft velvet", "crumpled paper" |
 | **4. Context**             | Add "for whom": "for a luxury cookbook" changes everything          |
@@ -110,9 +110,11 @@ _From Google DeepMind's official Gemini Pro guide_
 **Bad**: `dog, park, 4k, realistic`
 **Good**: "A golden retriever playing fetch in a sunny park, captured in photorealistic detail"
 
+<!-- copy-specific:realism -->
 For photos that should look like real camera captures, see **Real-camera realism** in `prompt-patterns.md` (camera first, device flaws, no "8K" or "masterpiece").
 The quickest route is `camera_look` (for example `"disposable-flash"` or `"camcorder-still"`): describe only the subject, action and setting and Go Bananas writes the camera, lighting and texture sentences. For several shots in one look, use `batch_generate` with `defaults.camera_look`.
 For identity plates of a recurring character, pass `reference_sheet`: `face-plate` first, then `outfit-plate` with the face plate as a `character` reference with `scope: "face"`, then `three-panel` with the face plate `scope: "face"` and the outfit plate `scope: "wardrobe"`. Flat shadowless light on an even 18% grey; not with `camera_look`, `enhance_prompt` or `image_to_edit_id`. `generate_with_subscription` and `batch_generate` take no references, so steps 2 and 3 use `generate_image` (or `start_generation`) on the workspace's keys. See **Reference sheets** in `prompt-patterns.md`.
+<!-- /copy-specific:realism -->
 
 ## Advanced Techniques
 
@@ -161,21 +163,31 @@ Every image lands in the gallery. To keep a campaign together:
 
 - **Text & Infographics**: SOTA text rendering, data visualization
 - **Viral Thumbnails**: Identity + text + graphics in one pass
-- **Storyboarding**: Multi-scene sequential art with consistent characters
+- **Storyboarding**: Multi-scene sequential art with consistent characters (`storyboards.md`)
 - **Structural Control**: Sketches/wireframes to polished designs
 - **2D↔3D Translation**: Floor plans to renders, 2D art to 3D
 - **4K Textures**: Print-quality output for wallpapers and materials
+
+<!-- copy-specific:errors -->
+<!-- /copy-specific:errors -->
 
 ## Reference Documentation
 
 For detailed information, see:
 
+<!-- copy-specific:references -->
 - **mcp-tools.md** - All 58 MCP tools with parameters and examples
 - **rest-api.md** - REST endpoints with curl examples
 - **prompt-patterns.md** - Best practices for writing effective prompts
 - **models.md** - Detailed Flash vs Pro feature comparison
 - **use-cases.md** - Templates for common scenarios (marketing, infographics, characters)
 - **error-handling.md** - MCP error codes, rejected keys, rate limits, quota, uncertain async outcomes, and graceful failure patterns
+- **refine-loop.md** - Checks written before generating, the cheapest fix, one change per round, a 3-round cap
+- **consistency.md** - Baseline plus one change, every image anchored to one approved picture, fixing drift
+- **product-shots.md** - A real product photo in new scenes, label text checked letter by letter
+- **storyboards.md** - Beat table first, one text-free image per panel, screen direction
+- **multi-reference.md** - One job per reference picture, notes, weight, the leak check and the limits
+<!-- /copy-specific:references -->
 
 ## Example Workflows
 
@@ -191,8 +203,8 @@ For detailed information, see:
 
 ```
 1. create_product_reference - Save product from URL
-2. generate_with_product - Generate marketing scenes
-3. continue_editing - Refine results
+2. generate_with_product - Generate marketing scenes, one scene per call
+3. edit_image on the image - Fix a wrong letter or logo; generate again for a wrong shape (`product-shots.md`)
 ```
 
 ### Consistent Branding
@@ -207,7 +219,7 @@ For detailed information, see:
 
 ```
 1. generate_image with style_preset_name "character reference sheet" - Generate multi-panel sheet
-2. continue_editing - Fix any inconsistencies ("make all panels show the same hair color")
+2. edit_image on the sheet - Fix one inconsistency per edit ("make all panels show the same hair color"); generate the sheet again if several panels are wrong
 3. create_character - Save with the reference sheet as reference image
 4. generate_with_character - Test consistency in new scenes
 ```
@@ -230,7 +242,7 @@ generate_image({
 ```
 
 **Step 2: Iterative Refinement**
-Use `continue_editing` to fix inconsistencies across panels. Common fixes:
+Fix one inconsistency per edit with `edit_image` on the sheet's `image_id` (`continue_editing` edits the last image of the session, which may no longer be the sheet). If several panels are wrong, generate the sheet again. Common fixes (`refine-loop.md` has the full loop):
 
 - "Make hair color consistent across all panels"
 - "Ensure armor details match between front and back views"
@@ -289,6 +301,9 @@ When generating scenes with saved characters, use these techniques for maximum c
 **Use `character_ids` over `character_names`**
 IDs are unambiguous and avoid partial name matching issues.
 
+**Keep the Wording Fixed**
+Copy the same baseline text into every call and change only the final scene clause. Anchor every scene to the approved reference, never to the last result. See `consistency.md`.
+
 **Add Identity Locking Language to Scene Prompts**
 Include explicit instructions in your scene prompt:
 
@@ -309,8 +324,8 @@ generate_with_multiple_characters({
 
 **Troubleshooting Poor Consistency**
 
-- Use `continue_editing` to fix specific features: "make the character's hair match the reference image"
-- Provide more reference images when creating the character (up to 3 for Standard, 14 for Pro)
+- Fix one image with `edit_image` on that image: "make the character's hair match the reference image; change nothing else"
+- Provide clear reference images when creating the character: a saved character sends up to 4 on standard models and 5 on Pro and the OpenAI models, and a multi-character scene shares that total, at most 3 each. `update_character` replaces the whole `reference_image_ids` list
 - Add specific physical descriptions to the character's `base_prompt`
 
 ### Reference Library Management

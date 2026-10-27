@@ -12,7 +12,7 @@ Gemini Pro is a "Thinking" model. It doesn't just match keywords; it understands
 
 ### 1. Edit, Don't Re-roll
 
-If an image is 80% correct, **do not generate a new one from scratch**. Use `continue_editing` to request specific changes.
+If an image is 80% correct, **do not generate a new one from scratch**. Ask for the specific change with `edit_image` on that image's `image_id`, or `continue_editing` when it is the last image of the session. Fix one thing per edit; `refine-loop.md` has the full loop (checks first, cheapest fix, 3-round cap).
 
 ```
 "That's great, but change the lighting to sunset and make the text neon blue."
@@ -62,6 +62,8 @@ When using reference images, explicitly state the consistency requirement:
 "Maintain the character's identity and attire from the reference."
 "The subject should be identical to the reference, only change the pose."
 ```
+
+Across a set, keep the rest of the prompt word for word and change only the final scene clause, and use the same approved picture as the reference every time. See `consistency.md`.
 
 ---
 
@@ -281,6 +283,7 @@ shot on 85mm lens, soft natural light (technical)"
 2. **Specify position**: top, bottom, center, left, right
 3. **Describe font style**: serif, sans-serif, bold, italic
 4. **Keep it simple**: Fewer words = better rendering
+5. **Check it letter by letter**: read every word in the result. One wrong letter on a good image is an `edit_image` ("change only the title so it reads STELLAR DRIFT; keep everything else the same"), not a new image
 
 ### Examples:
 ```
@@ -564,8 +567,8 @@ Simple → Refined → Final
 1. **Start simple**: Generate with minimal prompt
 2. **Observe defaults**: See what the model chooses
 3. **Add one element**: Quality, setting, or mood
-4. **Use continue_editing**: Don't regenerate—refine!
-5. **Iterate**: Keep building until satisfied
+4. **Edit the keeper**: one local fix per edit with `edit_image` on its `image_id`; generate again when the content is wrong (`refine-loop.md`)
+5. **Stop after 3 rounds**: show the best result, say what still falls short, and ask the user how to go on
 
 ### Benefits:
 - Learn model's interpretation patterns
@@ -578,14 +581,14 @@ Simple → Refined → Final
 1. generate_image({ prompt: "A portrait" })
    → Model shows default style, lighting, subject
 
-2. continue_editing({ prompt: "make it more dramatic" })
-   → Adds contrast, shadows, intensity
+2. generate_image({ prompt: "A dramatic portrait" })
+   → One element added: contrast, shadows, intensity
 
-3. continue_editing({ prompt: "add studio lighting, fashion editorial" })
+3. generate_image({ prompt: "A dramatic fashion-editorial portrait in studio light" })
    → Shifts to professional photography style
 
-4. continue_editing({ prompt: "the subject should be wearing avant-garde fashion" })
-   → Final creative direction applied
+4. edit_image({ image_id: <the keeper>, prompt: "change only the jacket to an avant-garde sculpted coat; keep everything else the same" })
+   → One local change on the image you are keeping
 ```
 
 ### Image Recreation Exercise
