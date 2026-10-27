@@ -510,7 +510,7 @@ All errors return JSON with `error` field. Most requests that can never succeed 
 | 403 | Forbidden - Tenant access denied |
 | 404 | Not Found - Resource doesn't exist in this workspace (`image_not_found`, `character_not_found`, ...) |
 | 409 | Conflict - Name already in use (`character_name_taken`, `product_name_taken`, ...) |
-| 422 | Unprocessable Content - The image provider rejected the workspace's API key (`provider_credentials_rejected`). Fix the key in workspace settings |
+| 422 | Unprocessable Content - The image provider rejected the workspace's API key (`provider_credentials_rejected`): fix the key in workspace settings. Or the provider refused the prompt or references (`content_blocked`): rewrite once, then ask the user (error-handling.md). A failed async job carries `errorCode`, a batch or bulk-edit item `code` |
 | 429 | Too Many Requests - The workspace's rate limit exceeded |
 | 500 | Internal Server Error - The provider's own message (timeout, outage, per-minute rate limit, billing, daily quota), or a generic message with an `errorId` |
 

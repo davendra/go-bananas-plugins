@@ -162,7 +162,6 @@ Every image lands in the gallery. To keep a campaign together:
 ### 7. Pro Model Features (Advanced)
 
 - **Text & Infographics**: SOTA text rendering, data visualization
-- **Viral Thumbnails**: Identity + text + graphics in one pass
 - **Storyboarding**: Multi-scene sequential art with consistent characters (`storyboards.md`)
 - **Structural Control**: Sketches/wireframes to polished designs
 - **2D↔3D Translation**: Floor plans to renders, 2D art to 3D
@@ -187,6 +186,11 @@ For detailed information, see:
 - **product-shots.md** - A real product photo in new scenes, label text checked letter by letter
 - **storyboards.md** - Beat table first, one text-free image per panel, screen direction
 - **multi-reference.md** - One job per reference picture, notes, weight, the leak check and the limits
+- **thumbnails.md** - Video thumbnails that read at feed size: one subject, the exact words, faces from approved references
+- **brand-kit.md** - Brand spec first, a style preset, one approved logo reused in every placement
+- **formats.md** - One master in every size: extend, recompose, safe zones, placement sizes
+- **model-comparison.md** - One brief on several models: checks first, only model_id changes, cost estimates, a results table
+- **game-assets.md** - Style-matched icons, sprites, level layers and textures; cut-outs and their limits
 <!-- /copy-specific:references -->
 
 ## Example Workflows
@@ -324,7 +328,7 @@ generate_with_multiple_characters({
 
 **Troubleshooting Poor Consistency**
 
-- Fix one image with `edit_image` on that image: "make the character's hair match the reference image; change nothing else"
+- Fix one image with `edit_image` on that image, naming the feature itself, since it sees only that image and not the references: "give the character short wavy black hair to the jaw; change nothing else"
 - Provide clear reference images when creating the character: a saved character sends up to 4 on standard models and 5 on Pro and the OpenAI models, and a multi-character scene shares that total, at most 3 each. `update_character` replaces the whole `reference_image_ids` list
 - Add specific physical descriptions to the character's `base_prompt`
 
