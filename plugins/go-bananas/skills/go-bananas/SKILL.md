@@ -175,7 +175,7 @@ Every image lands in the gallery. To keep a campaign together:
 For detailed information, see:
 
 <!-- copy-specific:references -->
-- **mcp-tools.md** - All 58 MCP tools with parameters and examples
+- **mcp-tools.md** - All 59 MCP tools with parameters and examples
 - **rest-api.md** - REST endpoints with curl examples
 - **prompt-patterns.md** - Best practices for writing effective prompts
 - **models.md** - Detailed Flash vs Pro feature comparison
