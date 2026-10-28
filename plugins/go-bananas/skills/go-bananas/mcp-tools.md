@@ -1,6 +1,6 @@
 # Go Bananas! MCP Tools Reference
 
-Complete documentation for all 58 MCP tools organized by category.
+Complete documentation for all 59 MCP tools organized by category.
 
 ---
 
@@ -31,7 +31,7 @@ A camera look's or reference sheet's negative prompt is added as a closing `Avoi
 
 ---
 
-## Image Generation, Posters & Editing (11 tools)
+## Image Generation, Posters & Editing (12 tools)
 
 ### generate_image
 
@@ -67,6 +67,14 @@ Every tool that makes images takes `project` and `tags`.
   "n": 2
 }
 ```
+
+### preview_generation
+
+Show what `generate_image` would send without making an image: the final prompt (style presets, scenes, characters, products, `reference_assets` roles, `camera_look` and `reference_sheet` applied), model, aspect ratio, reference counts and a quota check with estimated cost. Takes `generate_image`'s parameters except `client_request_id`, `generation_lane`, `project` and `tags`, and picks the model as `generate_image` does (a character's preferred model included). Saves nothing and costs no quota. Use it when a request combines several saved items or references and you want to check the prompt first.
+
+- `enhance_prompt` is not run; the preview shows the prompt before enhancement and warns.
+- Workspace-key lane only: it does not preview `generate_with_subscription`, and it warns when the workspace has no key for the chosen model.
+- An `image_url` reference is not downloaded, so a broken or too-small picture shows up only when generating.
 
 ### generate_poster
 
