@@ -83,7 +83,7 @@ curl -X POST https://gobananasai.com/api/images \
 | system_instruction | string | No | Style guidance |
 | style_preset_id | integer | No | Apply preset by ID |
 | style_preset_name | string | No | Apply preset by name |
-| model_id | string | No | gemini-flash-lite-image (default), gemini-nano-banana-2.1, gemini-pro-image, openai-gpt-image-2, openai-gpt-image-2.5-flare or openai-gpt-image-2.5-sunburst |
+| model_id | string | No | gemini-flash-lite-image (default), gemini-nano-banana-2.1, gemini-pro-image, openai-gpt-image-2, openai-gpt-image-2.6-flare, openai-gpt-image-2.6-sunburst, openai-gpt-image-2.5-flare or openai-gpt-image-2.5-sunburst |
 | project | string | No | Project to file the new images in (created if new; `none` for no project; blank counts as not given) |
 | tags | string[] | No | Up to 10 tags for the new images |
 

@@ -50,7 +50,7 @@ batch_generate({
 
 | Model | How to get a cut-out |
 |---|---|
-| GPT Image 2.5 Flare and Sunburst (`openai-gpt-image-2.5-flare`, `openai-gpt-image-2.5-sunburst`) | `background: "transparent"` with `output_format` `"png"` or `"webp"` |
+| GPT Image 2.6 and 2.5 Flare and Sunburst (`openai-gpt-image-2.6-flare`, `openai-gpt-image-2.6-sunburst`, `openai-gpt-image-2.5-flare`, `openai-gpt-image-2.5-sunburst`) | `background: "transparent"` with `output_format` `"png"` or `"webp"` |
 | Every other model | An opaque picture: ask for a flat pure magenta (#FF00FF) background and remove that colour outside Go Bananas |
 
 ```

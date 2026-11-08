@@ -5,7 +5,7 @@ description: "AI image generation using Go Bananas MCP tools. Call get_subscript
 
 # Go Bananas! Image Generation
 
-AI-powered image generation with Nano Banana 2 Lite, Nano Banana 2.1, Go Bananas! Pro and the OpenAI GPT Image 2 and 2.5 models, deployed on Cloudflare Workers.
+AI-powered image generation with Nano Banana 2 Lite, Nano Banana 2.1, Go Bananas! Pro and the OpenAI GPT Image 2, 2.5 and 2.6 models, deployed on Cloudflare Workers.
 
 ## Subscription-first routing
 
@@ -27,6 +27,8 @@ Editing has no subscription path: `edit_image`, `continue_editing`, `edit_upload
 For the human CLI, `gb generate` uses the configured `auto` lane. Use `--subscription` to require subscription generation or `--provider` to explicitly use configured Gemini/OpenAI credentials. Always report the returned `source` and `providerApiUsed` provenance fields.
 
 ## Quick Start
+
+**First run.** For someone who has just connected, or asks what Go Bananas can do, call `get_account_summary` first and read its `gettingStarted` block (the lane a first image takes, images left this month, three ready-to-send starters); the `start` skill (`/go-bananas:start`) walks the six steps from there to a saved image. Everything else is below.
 
 ### Option 1: MCP Server (Recommended)
 

@@ -18,7 +18,7 @@ Every model is a paid call, and the Gemini and OpenAI models bill different keys
 check_quota({ estimated_images: 1, model_id: "openai-gpt-image-2", quality: "medium" })
 ```
 
-It returns an estimate, not the bill; say so in the report. GPT Image 2 needs a set `quality` for a dollar figure (`auto` gives none), and the GPT Image 2.5 models get no dollar figure at all, only a warning. Put "no estimate" in the table rather than a guess.
+It returns an estimate, not the bill; say so in the report. GPT Image 2 needs a set `quality` for a dollar figure (`auto` gives none), and the GPT Image 2.5 and 2.6 models get no dollar figure at all, only a warning. Put "no estimate" in the table rather than a guess.
 
 ## 2. Write the brief and the checks
 

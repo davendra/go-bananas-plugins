@@ -48,7 +48,8 @@ Generate new images from text prompts.
 | reference_images | array | No | R2 keys of images stored in this workspace (model-dependent limits). Other keys and URLs are rejected with 400; for a URL use `reference_assets` with `image_url` |
 | style_preset_id | integer | No | Apply saved style preset by ID |
 | style_preset_name | string | No | Apply saved style preset by name |
-| model_id | string | No | gemini-flash-lite-image (default), gemini-nano-banana-2.1, gemini-pro-image, openai-gpt-image-2, openai-gpt-image-2.5-flare or openai-gpt-image-2.5-sunburst |
+| model_id | string | No | gemini-flash-lite-image (default), gemini-nano-banana-2.1, gemini-pro-image, openai-gpt-image-2, openai-gpt-image-2.6-flare, openai-gpt-image-2.6-sunburst, openai-gpt-image-2.5-flare or openai-gpt-image-2.5-sunburst |
+| complexity | string | No | GPT Image 2.6 only: `low`, `medium` or `high` planning effort, separate from quality. Omitted, 2.6 plans at `high`. Use `low` for a focused edit (a background, a sign). Other OpenAI models answer 400; Gemini ignores it |
 | project | string | No | Project to file the new images under. Only when the user names one, then keep passing it; "none" for no project. See [Projects and Tags](#projects-and-tags-2-tools) |
 | tags | string[] | No | Tags to add to the new images (up to 10), only when the user asks |
 | camera_look | string | No | Built-in real-camera look: disposable-flash, skate-fisheye, old-phone-selfie, camcorder-still, point-and-shoot-night, street-candid-35mm, security-camera or instant-film. Describe only subject, action and setting; Go Bananas adds the camera, lighting and texture sentences. Not with enhance_prompt or image_to_edit_id |
@@ -93,7 +94,7 @@ Generate a structured poster, flyer, cover, or campaign asset from brief fields.
 | template_image_id | integer | No | Existing poster to use as layout reference |
 | hero_image_id | integer | No | Existing image to use as main hero reference |
 | logo_image_id | integer | No | Existing logo/wordmark image to preserve exactly |
-| model_id | string | No | Defaults to openai-gpt-image-2 when allowed, otherwise tenant default |
+| model_id | string | No | Defaults to openai-gpt-image-2.6-flare when allowed and an OpenAI key is active, then openai-gpt-image-2, otherwise tenant default; with character_id, openai-gpt-image-2 first when it fits |
 
 **Example:**
 
@@ -644,6 +645,7 @@ Pre-flight check for whether the tenant can generate images. Checks storage quot
 | estimated_images | integer | No | Number of images you plan to generate (1-100, default 1) |
 | model_id | string | No | Model you plan to use |
 | quality | string | No | OpenAI quality tier when applicable |
+| complexity | string | No | OpenAI complexity you plan to send (GPT Image 2.6 only); another model makes `canGenerate` false |
 | size | string | No | OpenAI size when applicable |
 | resolution_tier | string | No | Gemini resolution tier when applicable |
 
@@ -698,6 +700,7 @@ Comprehensive account overview.
 - Storage usage
 - Session activity
 - Most used references
+- `gettingStarted` (also in `structuredContent`): the lane a first image takes now (`subscription`, `provider` or `none`, with `laneReason`), `allowance.oneLine` ("About N images left this month … Resets 1 Nov."), `canMakeFirstImage` with a `nextStep` when false, and three starters (`suggestedUserPrompts`: send `tool` and `params` as given; add a fresh `client_request_id` only where `idempotencyParam` names it). Call this first for a new user or "what can you do"; the `start` skill does.
 - Rate limit status (`rateLimit.remaining`, `rateLimit.limitPerMinute`, `rateLimit.resetAt`)
 - Service health (`serviceHealth.circuitState`, `serviceHealth.ok`)
 
