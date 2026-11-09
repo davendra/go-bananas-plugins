@@ -488,6 +488,7 @@ Generate a scene with a saved character.
 | additional_details | string | No | Extra details |
 | aspect_ratio | string | No | Override character default |
 | override_negative_prompt | string | No | Override character negative |
+| override_environment | boolean | No | Keep the character, but use only the environment in scene_prompt (not its baked-in setting) |
 
 **Example:**
 
@@ -510,6 +511,7 @@ Generate a scene with 2-5 characters together.
 | scene_prompt | string | Yes | Scene with all characters (10-1500 chars) |
 | additional_details | string | No | Extra details |
 | aspect_ratio | string | No | Default: landscape |
+| override_environment | boolean | No | Keep each character, but use only the environment in scene_prompt |
 
 **Example:**
 
