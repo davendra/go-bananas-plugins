@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Go Bananas: Start'
+  short_description: 'First image in one pick'
+  default_prompt: 'Use $start: call get_account_summary, say what Go Bananas can do and how many images are left this month, offer the three starters, make the pick and show the gallery link.'

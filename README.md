@@ -4,8 +4,8 @@ Use [Go Bananas](https://gobananasai.com) from your coding agent: generate and e
 characters and products consistent across scenes, and make posters. Everything is saved to your
 Go Bananas gallery.
 
-The plugin adds the Go Bananas MCP server (`https://mcp.gobananasai.com`, OAuth sign-in) and a
-skill that tells your agent how to use it well.
+The plugin adds the Go Bananas MCP server (`https://mcp.gobananasai.com`, OAuth sign-in), a
+skill that tells your agent how to use it well, and a `start` skill for your first image.
 
 ## Claude Code
 
@@ -47,6 +47,16 @@ Run these one at a time:
    ```
 
 Sign in to Go Bananas when Codex asks.
+
+## First image
+
+Once you are signed in, ask for your first picture:
+
+- Claude Code: run `/go-bananas:start`.
+- Codex: ask "Use $start", or just "What can Go Bananas do?"
+
+It says how many images you have left this month, offers three ready-made starters and makes the
+one you pick. The image is saved to your Go Bananas gallery.
 
 ## Other agents
 
