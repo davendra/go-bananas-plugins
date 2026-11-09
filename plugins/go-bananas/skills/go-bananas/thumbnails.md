@@ -43,7 +43,7 @@ generate_image({
 })
 ```
 
-- With a character reference and no `model_id`, Go Bananas uses GPT Image 2 when the workspace allows it, has an OpenAI key and the request fits it (a 1K request, a ratio it takes, no Google Search or thinking). That is its face default, chosen after a test where GPT Image 2 kept faces that Pro changed. For a thumbnail with a face, leave `model_id` out unless the user asks for a model.
+- With a character reference and no `model_id`, Go Bananas uses GPT Image 2.6 Flare when the workspace allows it, has an OpenAI key and the request fits it (a 1K request, a ratio it takes, no Google Search or thinking). That is its face default. For a thumbnail with a face, leave `model_id` out unless the user asks for a model.
 
 - For a photo the user uploaded, use `{ role: "character", image_id: 42 }`. Reference pictures must be at least 512x512.
 - Typed references send the pictures and the name, not the saved description, so restate the key traits (hair, glasses, outfit) in `prompt`.
