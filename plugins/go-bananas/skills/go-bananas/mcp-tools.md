@@ -94,7 +94,7 @@ Generate a structured poster, flyer, cover, or campaign asset from brief fields.
 | template_image_id | integer | No | Existing poster to use as layout reference |
 | hero_image_id | integer | No | Existing image to use as main hero reference |
 | logo_image_id | integer | No | Existing logo/wordmark image to preserve exactly |
-| model_id | string | No | Defaults to openai-gpt-image-2.6-flare when allowed and an OpenAI key is active, then openai-gpt-image-2, otherwise tenant default; with character_id, openai-gpt-image-2 first when it fits |
+| model_id | string | No | Defaults to openai-gpt-image-2.6-flare when allowed and an OpenAI key is active, then openai-gpt-image-2, otherwise tenant default; with character_id, the face default (also openai-gpt-image-2.6-flare) first when it fits |
 
 **Example:**
 

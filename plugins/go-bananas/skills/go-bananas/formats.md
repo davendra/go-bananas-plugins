@@ -50,7 +50,7 @@ generate_image({
 ```
 
 - The `style` role carries the palette, light and rendering but not the content, so restate the subject in `prompt`.
-- When the subject must match exactly, add it as its own reference: `{ role: "character", character_id: 5 }` or `{ role: "product", product_id: 3 }`. Keep `model_id` in the call when you add a character reference: without it, a 1K request with a face can move to GPT Image 2, and a 2K or 4K one stays on the workspace default model, which may be Nano Banana 2 Lite (1K only, so the call is refused).
+- When the subject must match exactly, add it as its own reference: `{ role: "character", character_id: 5 }` or `{ role: "product", product_id: 3 }`. Keep `model_id` in the call when you add a character reference: without it, a 1K request with a face can move to GPT Image 2.6 Flare, and a 2K or 4K one stays on the workspace default model, which may be Nano Banana 2 Lite (1K only, so the call is refused).
 - Don't use the `composition` or `template` roles here: they copy the master's layout, which is what a new ratio has to change.
 - Extending a wide picture into a tall one usually leaves the subject small or cut off. Recompose it.
 
