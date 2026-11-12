@@ -176,7 +176,7 @@ Upload an image from URL or local file path for editing.
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | image_url | string | No | Public URL to image (use this OR file_path) |
-| file_path | string | No | Local file path — STDIO proxy reads and uploads directly (use this OR image_url) |
+| file_path | string | No | Local file path (use this OR image_url). Through the `gobananas-mcp` STDIO proxy the file uploads directly. On a direct connection the reply is a one-time upload link and a curl command: run it, and its JSON reply holds the `image_id` |
 | file_name | string | No | Original filename |
 | mime_type | string | No | Image MIME type |
 
