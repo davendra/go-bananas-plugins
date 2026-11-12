@@ -43,16 +43,19 @@ generate_with_character - Create scenes with saved characters
 generate_with_product - Marketing images with product references
 ```
 
-### Uploading Local Images (NEW)
+### Uploading Local Images
 
-Use `file_path` parameter to upload images directly from your machine:
+Use the `file_path` parameter for an image on the user's machine:
 
 ```
 upload_image_for_editing({ file_path: "/path/to/image.jpg" })
 ```
 
-The STDIO proxy reads the file locally and uploads directly — no imgur or third-party services needed.
-Supports: PNG, JPEG, WebP, GIF. Max 20MB.
+- With the local connector (the `gobananas-mcp` STDIO proxy) the file is uploaded directly and the reply holds the `image_id`.
+- On a direct connection (the plugin's default) the reply is a one-time upload link and a curl command. Run the command in a shell: its JSON reply holds the `image_id`. The link works once, for 15 minutes; if the command fails, call the tool again.
+
+Never put the user's file on imgur or another public host, and do not drive the website in a browser to upload it.
+Supports: PNG, JPEG, WebP, single-frame GIF. Max 20MB and 4.2 megapixels (2048 × 2048).
 
 ### Option 2: REST API
 
