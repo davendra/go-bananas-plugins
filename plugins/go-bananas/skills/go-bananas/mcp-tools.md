@@ -6,7 +6,7 @@ Complete documentation for all 59 MCP tools organized by category.
 
 ## Subscription (2 tools)
 
-These tools require Go Bananas user OAuth. They use the connected ChatGPT/Codex subscription and never fall back to tenant Gemini or OpenAI API keys.
+These tools require Go Bananas user OAuth. They use the connected ChatGPT/Codex subscription and never fall back to tenant provider API keys (Gemini, OpenAI or BytePlus).
 
 ### get_subscription_status
 
@@ -48,13 +48,13 @@ Generate new images from text prompts.
 | reference_images | array | No | R2 keys of images stored in this workspace (model-dependent limits). Other keys and URLs are rejected with 400; for a URL use `reference_assets` with `image_url` |
 | style_preset_id | integer | No | Apply saved style preset by ID |
 | style_preset_name | string | No | Apply saved style preset by name |
-| model_id | string | No | gemini-flash-lite-image (default), gemini-nano-banana-2.1, gemini-pro-image, openai-gpt-image-2, openai-gpt-image-2.6-flare, openai-gpt-image-2.6-sunburst, openai-gpt-image-2.5-flare or openai-gpt-image-2.5-sunburst |
+| model_id | string | No | gemini-flash-lite-image (default), gemini-nano-banana-2.1, gemini-pro-image, openai-gpt-image-2, openai-gpt-image-2.6-flare, openai-gpt-image-2.6-sunburst, openai-gpt-image-2.5-flare, openai-gpt-image-2.5-sunburst or byteplus-seedream-5.5 (Seedream 5.5; needs the workspace's BytePlus key) |
 | complexity | string | No | GPT Image 2.6 only: `low`, `medium` or `high` planning effort, separate from quality. Omitted, 2.6 plans at `high`. Use `low` for a focused edit (a background, a sign). Other OpenAI models answer 400; Gemini ignores it |
 | project | string | No | Project to file the new images under. Only when the user names one, then keep passing it; "none" for no project. See [Projects and Tags](#projects-and-tags-2-tools) |
 | tags | string[] | No | Tags to add to the new images (up to 10), only when the user asks |
 | camera_look | string | No | Built-in real-camera look: disposable-flash, skate-fisheye, old-phone-selfie, camcorder-still, point-and-shoot-night, street-candid-35mm, security-camera or instant-film. Describe only subject, action and setting; Go Bananas adds the camera, lighting and texture sentences. Not with enhance_prompt or image_to_edit_id |
 | reference_sheet | string | No | Built-in identity plate: face-plate (1:1), outfit-plate (9:16) or three-panel (16:9), with flat shadowless light on an even 18% grey. Describe only the person and the outfit; Go Bananas adds the framing, light and backdrop sentences. Not with camera_look, enhance_prompt or image_to_edit_id. See prompt-patterns.md |
-| reference_assets | array | No | Typed references, each `{ role, <one source>, weight?, notes?, scope? }`. Roles: logo, style, composition, template, character, product. Source: one of image_id, image_url, r2_key, character_id (role character), product_id (role product) or reference_group_id. `scope` (role character only): face (the face and bone structure only), wardrobe (outfit, footwear, jewellery, hair colour and cut, build and body markings) or full (default). Total images must fit the model (Gemini 14, OpenAI 16). Always uses the workspace's keys, never the subscription. How to write `notes`: see multi-reference.md |
+| reference_assets | array | No | Typed references, each `{ role, <one source>, weight?, notes?, scope? }`. Roles: logo, style, composition, template, character, product. Source: one of image_id, image_url, r2_key, character_id (role character), product_id (role product) or reference_group_id. `scope` (role character only): face (the face and bone structure only), wardrobe (outfit, footwear, jewellery, hair colour and cut, build and body markings) or full (default). Total images must fit the model (Gemini 14, OpenAI 16, Seedream 10). Always uses the workspace's keys, never the subscription. How to write `notes`: see multi-reference.md |
 
 Every tool that makes images takes `project` and `tags`.
 
@@ -649,7 +649,7 @@ Pre-flight check for whether the tenant can generate images. Checks storage quot
 | quality | string | No | OpenAI quality tier when applicable |
 | complexity | string | No | OpenAI complexity you plan to send (GPT Image 2.6 only); another model makes `canGenerate` false |
 | size | string | No | OpenAI size when applicable |
-| resolution_tier | string | No | Gemini resolution tier when applicable |
+| resolution_tier | string | No | Gemini or Seedream resolution tier when applicable (Seedream: `1k` or `2k`) |
 
 **Returns:**
 

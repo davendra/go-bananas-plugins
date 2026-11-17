@@ -1,30 +1,30 @@
 ---
 name: go-bananas
-description: "AI image generation using Go Bananas MCP tools. Call get_subscription_status first and use generate_with_subscription when the signed-in user's ChatGPT/Codex subscription is connected; otherwise generate with the workspace's own Gemini/OpenAI keys without asking. Use for requests to generate, create, or edit images/pictures/photos/art using AI — NOT for code that handles images. Also covers provider-backed Gemini and OpenAI generation, conversational editing, reusable characters/products, batches, style presets, quota, and history."
+description: "AI image generation using Go Bananas MCP tools. Call get_subscription_status first and use generate_with_subscription when the signed-in user's ChatGPT/Codex subscription is connected; otherwise generate with the workspace's own provider keys without asking. Use for requests to generate, create, or edit images/pictures/photos/art using AI — NOT for code that handles images. Also covers provider-backed Gemini, OpenAI and BytePlus generation, conversational editing, reusable characters/products, batches, style presets, quota, and history."
 ---
 
 # Go Bananas! Image Generation
 
-AI-powered image generation with Nano Banana 2 Lite, Nano Banana 2.1, Go Bananas! Pro and the OpenAI GPT Image 2, 2.5 and 2.6 models, deployed on Cloudflare Workers.
+AI-powered image generation with Nano Banana 2 Lite, Nano Banana 2.1, Go Bananas! Pro, the OpenAI GPT Image 2, 2.5 and 2.6 models and BytePlus Seedream 5.5, deployed on Cloudflare Workers.
 
 ## Subscription-first routing
 
-A connected ChatGPT/Codex subscription is used first, but it is optional: a workspace with its own Gemini or OpenAI keys generates with them when no subscription is connected.
+A connected ChatGPT/Codex subscription is used first, but it is optional: a workspace with its own provider keys (Gemini, OpenAI or BytePlus) generates with them when no subscription is connected.
 
 1. Call `get_subscription_status`.
 2. When `connected: true`, call `generate_with_subscription` with the prompt and supported aspect ratio. Return the saved image ID, URL, `source: "chatgpt_subscription"`, and remaining allowance.
 3. Otherwise (not connected, still pending, unavailable, a ChatGPT Free plan, or an API-key-only client), use `generate_image` and the other image tools with the workspace's keys. Do not ask the user first and do not tell them to connect ChatGPT.
-4. If `generate_with_subscription` fails because the subscription cannot run (runner unavailable, disconnected, allowance used up, image generation not available on the plan), call `generate_image` with `generation_lane: "provider"` and tell the user in your reply that the workspace's Gemini/OpenAI keys were used. Without `generation_lane: "provider"`, a session that still shows as connected would send the call straight back to the subscription.
+4. If `generate_with_subscription` fails because the subscription cannot run (runner unavailable, disconnected, allowance used up, image generation not available on the plan), call `generate_image` with `generation_lane: "provider"` and tell the user in your reply that the workspace's own provider keys were used. Without `generation_lane: "provider"`, a session that still shows as connected would send the call straight back to the subscription.
 5. If ChatGPT declined the prompt, report that. Do not retry with the workspace's keys.
-6. Only when there is no subscription and `providerKeysConfigured` is `false` does `generate_image` refuse; then tell the user to connect ChatGPT at `https://gobananasai.com` or add a Gemini/OpenAI key to the workspace.
+6. Only when there is no subscription and `providerKeysConfigured` is `false` does `generate_image` refuse. If the refusal names a `model_id` that uses another key the workspace has, and the user did not ask for a particular model, retry once as it says and tell the user which model made the image; otherwise tell the user to connect ChatGPT at `https://gobananasai.com` or add a provider key to the workspace.
 
-This lane requires Go Bananas user OAuth. An API-key-only MCP client has tenant identity but cannot access an individual user's subscription. The subscription runner does not use the tenant's Gemini or OpenAI API keys and never exposes ChatGPT credentials.
+This lane requires Go Bananas user OAuth. An API-key-only MCP client has tenant identity but cannot access an individual user's subscription. The subscription runner does not use the tenant's provider API keys and never exposes ChatGPT credentials.
 
 `openai-gpt-image-2` is an OpenAI API model billed through configured provider credentials; it is not the ChatGPT subscription lane.
 
 Editing has no subscription path: `edit_image`, `continue_editing`, `edit_uploaded_image` and the other edit tools use the workspace's keys directly.
 
-For the human CLI, `gb generate` uses the configured `auto` lane. Use `--subscription` to require subscription generation or `--provider` to explicitly use configured Gemini/OpenAI credentials. Always report the returned `source` and `providerApiUsed` provenance fields.
+For the human CLI, `gb generate` uses the configured `auto` lane. Use `--subscription` to require subscription generation or `--provider` to explicitly use the workspace's own provider keys. Always report the returned `source` and `providerApiUsed` provenance fields.
 
 ## Quick Start
 
@@ -71,7 +71,7 @@ curl -X POST https://gobananasai.com/api/images \
 
 ## Provider-backed model selection
 
-This section applies whenever generation uses the workspace's own Gemini/OpenAI keys (routing steps 3 and 4 above, or a provider-only tool or field). Before large batches, OpenAI high-quality generations, or 2K/4K work, call:
+This section applies whenever generation uses the workspace's own provider keys (routing steps 3 and 4 above, or a provider-only tool or field). Before large batches, OpenAI high-quality generations, or 2K/4K work, call:
 
 ```
 list_models()
@@ -99,6 +99,7 @@ Within the explicitly selected provider-backed lane, use `model_id: "gemini-flas
 - **Standard (NB2.1)**: Use for broader ratios, 2K/4K output, grounding, and stronger multi-reference workflows; 1K, 2K or 4K output
 - **Pro**: Use for production print materials, infographics, text-heavy content, grounding, thinking mode, or 4K output
 - **OpenAI GPT Image 2**: Use when OpenAI output controls, quality tiers, or format options are specifically useful
+- **BytePlus Seedream 5.5** (`byteplus-seedream-5.5`): Use only when the user asks for Seedream. It runs on the workspace's own BytePlus key, makes 1K or 2K PNG images (`resolution_tier` `1k` or `2k`) and takes up to 10 reference images. If a Seedream error says BytePlus may have charged for the image, do not retry by yourself: tell the user and let them decide
 
 ## Golden Rules of Prompting
 

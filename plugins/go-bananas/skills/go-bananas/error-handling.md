@@ -46,9 +46,11 @@ Read the message before you retry. Many `-32603` errors are not temporary.
 
 | Message | Action |
 |---------|--------|
-| `Your image provider rejected its API key. Check the provider API key in workspace settings, then try again.` | The workspace's Gemini or OpenAI key is invalid or expired. Tell the user to replace it in workspace settings. REST answers 422 `provider_credentials_rejected`; in a REST batch or bulk edit, the item carries the same text as its `error` and `code: "provider_credentials_rejected"`, and a failed job the same `errorCode` |
+| `Your image provider rejected its API key. Check the provider API key in workspace settings, then try again.` | The workspace's Gemini, OpenAI or BytePlus key is invalid or expired. Tell the user to replace it in workspace settings. REST answers 422 `provider_credentials_rejected`; in a REST batch or bulk edit, the item carries the same text as its `error` and `code: "provider_credentials_rejected"`, and a failed job the same `errorCode` |
 | `The Higgsfield credentials were rejected. Replace provider_api_keys.higgsfield (api_key:api_key_secret) in the workspace settings.` | From `request_higgsfield_video` or `get_higgsfield_video_status`. Tell the user to replace the Higgsfield key |
 | `No active Gemini API keys are configured for tenant ...` (or OpenAI) | The workspace has no key for that provider. Tell the user to add one in workspace settings |
+| `No active BytePlus API key is configured for tenant ...` | Seedream 5.5 needs the workspace's own BytePlus key. Tell the user to add one in workspace settings, or use another model |
+| `This BytePlus account has not activated Seedream 5.5. Activate it in the ModelArk console (...), then try again.` | The key is fine but the BytePlus account has not switched the model on. Give the user the link from the message; do not retry until they have |
 
 ## Blocked Generations: Rewrite Once, Then Ask
 
@@ -90,9 +92,12 @@ Several messages contain "Rate limit exceeded", often after `Image generation fa
 | `Rate limit exceeded for <operation>: Gemini daily quota exhausted (...)` | The Gemini key's daily quota for that model | Not temporary. Do not retry. Call `check_quota` |
 | `Rate limit exceeded for <operation>: Gemini billing problem reported for this API key.` | Gemini billing | Not temporary. Do not retry. Call `check_quota` |
 | `OpenAI billing limit reached for the selected API key: ...` | OpenAI billing | Not temporary. Do not retry. Call `check_quota` |
+| `BytePlus rate limit exceeded: ...` | BytePlus's per-minute limit, after the server's own retries | Temporary. Wait a minute, then retry |
+| `BytePlus quota exhausted: ...` | The BytePlus account's quota or spending limit for Seedream 5.5 | Not temporary. Do not retry. Call `check_quota` |
+| `BytePlus billing problem: the account has an overdue balance. ...` | BytePlus billing | Not temporary. Do not retry. Call `check_quota` |
 | `Monthly quota exceeded: ...` or `Monthly storage quota cannot accommodate this upload.` | The workspace's monthly storage is full | Stop all generation. REST answers 402 |
 
-After a billing or daily-quota rejection, `check_quota` shows it in `details.providerStatus` for 15 minutes, or until the next success clears it. A Gemini daily quota covers only the model that hit it, so another allowed model may still work. OpenAI billing covers every OpenAI model. If the selected model is limited, `canGenerate` is `false`; other limited models appear in `warnings`. Tell the user what was hit and which models are still usable.
+After a billing or daily-quota rejection, `check_quota` shows it in `details.providerStatus` for 15 minutes, or until the next success clears it. A Gemini daily quota covers only the model that hit it, so another allowed model may still work. OpenAI billing covers every OpenAI model, and a BytePlus billing or quota stop covers Seedream 5.5. If the selected model is limited, `canGenerate` is `false`; other limited models appear in `warnings`. Tell the user what was hit and which models are still usable.
 
 ## Service Problems
 
@@ -102,6 +107,12 @@ After a billing or daily-quota rejection, `check_quota` shows it in `details.pro
 | `Generation queue is full (3 pending requests, ...)` | Wait for the current requests to finish. Check the gallery for recent images |
 | `Request timed out after waiting Ns in queue.` or `Generation timed out after Ns execution` | Check the gallery (`get_session_history`, `search_images`) for images that finished. Then retry once with a simpler prompt. If it fails again, stop sending |
 | Repeated `errorId` failures or provider outages | Stop and suggest the user check back later |
+
+## Seedream 5.5: An Image That May Have Been Charged
+
+A Seedream 5.5 (`byteplus-seedream-5.5`) error that says BytePlus may have charged for the image (`Nothing was saved, and BytePlus may have charged for the image.`, or `If the request reached BytePlus, it may have made and charged for the image.`) means BytePlus may have made the picture but Go Bananas could not save it: no answer in time, a dropped connection, an unreadable reply or a failed download. Go Bananas does not send that request again, and neither should you: a second request can be a second charge. Tell the user what happened and let them decide.
+
+A refused prompt or reference on Seedream is `content_blocked`, like any other provider's; a per-minute limit is retried by the server itself.
 
 ## Async Jobs: Failed or Uncertain
 

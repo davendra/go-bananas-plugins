@@ -8,7 +8,7 @@ Method adapted from [scenario-labs/skills](https://github.com/scenario-labs/skil
 
 ## 1. Ask the user first
 
-Every model is a paid call, and the Gemini and OpenAI models bill different keys. Before anything runs, agree with the user:
+Every model is a paid call, and the Gemini, OpenAI and BytePlus models bill different keys. Before anything runs, agree with the user:
 
 - **which models:** `list_models` shows the ones this workspace may use;
 - **how many images each;**
@@ -18,7 +18,7 @@ Every model is a paid call, and the Gemini and OpenAI models bill different keys
 check_quota({ estimated_images: 1, model_id: "openai-gpt-image-2", quality: "medium" })
 ```
 
-It returns an estimate, not the bill; say so in the report. GPT Image 2 needs a set `quality` for a dollar figure (`auto` gives none), and the GPT Image 2.5 and 2.6 models get no dollar figure at all, only a warning. Put "no estimate" in the table rather than a guess.
+It returns an estimate, not the bill; say so in the report. GPT Image 2 needs a set `quality` for a dollar figure (`auto` gives none), and the GPT Image 2.5 and 2.6 models get no dollar figure at all, only a warning. Seedream 5.5 gets an estimate from BytePlus's list prices, with a charge for each reference image. Put "no estimate" in the table rather than a guess.
 
 ## 2. Write the brief and the checks
 
@@ -38,6 +38,7 @@ Only `model_id` changes. Write down every difference a model forces:
 
 - Nano Banana 2 Lite is fixed at 1K.
 - `resolution_tier` does nothing on the OpenAI models; they take `size` and `quality` instead.
+- Seedream 5.5 takes `resolution_tier` `1k` or `2k` only, and makes its 1.5K size when none is given. It needs the workspace's own BytePlus key, takes at most 10 reference images and makes PNG only.
 - Go Bananas takes no seed, so every run differs, even on the same model.
 
 ## 4. Run it

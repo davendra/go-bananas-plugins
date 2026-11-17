@@ -9,7 +9,7 @@ Method adapted from [scenario-labs/skills](https://github.com/scenario-labs/skil
 ## 1. Approve one master
 
 - Text-free, so every format can take its own words later.
-- At the largest size available: `resolution_tier: "4k"` on Nano Banana 2.1 or Pro (Nano Banana 2 Lite is fixed at 1K; the OpenAI models take `size` instead).
+- At the largest size available: `resolution_tier: "4k"` on Nano Banana 2.1 or Pro (Nano Banana 2 Lite is fixed at 1K; the OpenAI models take `size` instead; Seedream 5.5 stops at `"2k"`).
 - Every format comes from this master's `image_id`, never from another format. Each generative step redraws the picture, and a copy of a copy drifts.
 
 ## 2. Take the first step that fits
