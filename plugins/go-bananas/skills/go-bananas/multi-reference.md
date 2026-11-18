@@ -57,7 +57,7 @@ Change one thing per run so you can see which change fixed the leak (see `refine
 
 ## Limits
 
-- Up to 14 reference pictures per request on Gemini and 16 on OpenAI. A `reference_assets` request over the limit is refused, never trimmed.
+- Up to 14 reference pictures per request on Gemini, 16 on OpenAI and 10 on Seedream 5.5. A `reference_assets` request over the limit is refused, never trimmed.
 - Every `image_id`, `image_url` or `r2_key` picture must be at least 512x512.
 - A saved character sends up to 4 pictures on standard models and 5 on Pro and the OpenAI models.
 - `reference_assets` always runs on the workspace's own keys, never the ChatGPT subscription.

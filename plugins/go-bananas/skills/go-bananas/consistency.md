@@ -37,7 +37,7 @@ Where the baseline lives:
 ## Reference limits
 
 - A saved character sends up to 4 reference pictures on standard models and 5 on Pro and the OpenAI models. In a multi-character scene all characters share those 4 or 5, at most 3 each, in list order: put first the character whose face matters most.
-- One request takes up to 14 reference pictures on Gemini and 16 on OpenAI.
+- One request takes up to 14 reference pictures on Gemini, 16 on OpenAI and 10 on Seedream 5.5.
 - Character pictures and `image_id` or `image_url` references must be at least 512x512. Product photos are not checked, but use one at least that size.
 
 ## When it drifts
