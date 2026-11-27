@@ -26,6 +26,15 @@ Editing has no subscription path: `edit_image`, `continue_editing`, `edit_upload
 
 For the human CLI, `gb generate` uses the configured `auto` lane. Use `--subscription` to require subscription generation or `--provider` to explicitly use the workspace's own provider keys. Always report the returned `source` and `providerApiUsed` provenance fields.
 
+## Recraft: SVG, logos and icons
+
+Use `generate_with_recraft` when the user wants an SVG (vector) image, a logo, an icon or a Recraft style. It makes images on the user's own Recraft account and **spends their personal Recraft credits**, so name the model you pick and the credit cost it implies: `recraftv4_1_vector` makes an SVG, `recraftv4_1_flash_raster` is the cheapest (1 credit), and the default `recraftv4_1` picks raster or vector itself. External models such as `bytedance_seedreamv5_pro` or `nano_banana_2p1` only work if their Recraft plan includes them. It needs Go Bananas user OAuth and never falls back to the workspace's keys or the ChatGPT lane. SVG results cannot be edited with `edit_image` or `continue_editing`; make a new one instead.
+
+- `recraft_not_connected`: tell the user to open the Go Bananas Dashboard and choose Connect Recraft on the Recraft row, then try again. `recraft_reconnect_required`: choose Reconnect on that row.
+- `recraft_workspace_not_personal`: Recraft's active account is a team workspace. Tell them to switch Recraft back to their personal account; Go Bananas only uses personal credits and never switches accounts itself.
+- An error that says Recraft may have made the image and charged credits, or that Recraft made images Go Bananas could not save: do not retry. Pass on any Recraft image links it lists and ask the user to check their Recraft account first. The first comes when Recraft got the request but no clear answer came back, for example a timeout, a dropped connection or an unreadable reply. Cancelling after the request reached Recraft does not stop it: Recraft still makes and charges for the images, and Go Bananas saves them to the gallery once Recraft's reply comes back.
+- `oauth_required`: an API-key client cannot use it; Recraft needs a signed-in user. `scope_required`: the OAuth grant lacks `images:generate`; re-authenticate and approve it. `recraft_unavailable`: Connect Recraft is switched off for this workspace; use another lane.
+
 ## Quick Start
 
 **First run.** For someone who has just connected, or asks what Go Bananas can do, call `get_account_summary` first and read its `gettingStarted` block (the lane a first image takes, images left this month, three ready-to-send starters); the `start` skill (`/go-bananas:start`) walks the six steps from there to a saved image. Everything else is below.
@@ -37,6 +46,7 @@ If you have Go Bananas! MCP server configured, use the tools directly:
 ```
 get_subscription_status - Check the connected user subscription first
 generate_with_subscription - Generate one image without provider API billing
+generate_with_recraft - SVG, logos and icons on the user's own Recraft credits
 generate_image - Create new images from text prompts
 continue_editing - Edit the last generated image conversationally
 generate_with_character - Create scenes with saved characters
@@ -181,7 +191,7 @@ Every image lands in the gallery. To keep a campaign together:
 For detailed information, see:
 
 <!-- copy-specific:references -->
-- **mcp-tools.md** - All 59 MCP tools with parameters and examples
+- **mcp-tools.md** - All 60 MCP tools with parameters and examples
 - **rest-api.md** - REST endpoints with curl examples
 - **prompt-patterns.md** - Best practices for writing effective prompts
 - **models.md** - Detailed Flash vs Pro feature comparison
