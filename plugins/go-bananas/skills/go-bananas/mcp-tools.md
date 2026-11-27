@@ -1,6 +1,6 @@
 # Go Bananas! MCP Tools Reference
 
-Complete documentation for all 59 MCP tools organized by category.
+Complete documentation for all 60 MCP tools organized by category.
 
 ---
 
@@ -13,6 +13,12 @@ These tools require Go Bananas user OAuth. They use the connected ChatGPT/Codex 
 Check whether the current OAuth user has a connected subscription runner. Call this before normal image creation. When `connected` is `false` (including a ChatGPT Free plan, which has no image generation), use `generate_image` with the workspace's keys; `providerKeysConfigured` says whether the workspace has a key for its default model.
 
 **Parameters:** None
+
+### generate_with_recraft
+
+Make raster or SVG images on the user's own Recraft account and save them to the gallery. Spends their personal Recraft credits; needs OAuth and a Connect Recraft link. Errors carry `(code: ...)`: `recraft_not_connected`, `recraft_reconnect_required`, `recraft_workspace_not_personal`, `recraft_model_unavailable`, `recraft_error`, `oauth_required`, `scope_required`, `recraft_unavailable`. SVG results cannot be edited.
+
+**Parameters:** `prompt` (required), `model` (`recraftv4_1` default, `recraftv4_1_vector`, `recraftv4_1_raster`, `recraftv4_1_flash_raster`, Pro variants), `image_size`, `input_style`, `n` (1-4), `project`, `tags`.
 
 ### generate_with_subscription
 
